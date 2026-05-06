@@ -1,0 +1,192 @@
+.stage1-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  background: radial-gradient(circle at 50% 0%, #1a2a40 0%, #0d1423 100%);
+  color: white;
+  position: relative;
+}
+
+/* Glassmorphism Header */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 15px 20px;
+  text-align: center;
+  z-index: 20;
+}
+
+.glass-panel h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #a64aff;
+  text-shadow: 0 0 10px rgba(166, 74, 255, 0.5);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.glass-panel p {
+  margin: 5px 0 0 0;
+  font-size: 0.85rem;
+  color: #a0aec0;
+}
+
+/* Premium Game Grid */
+.game-grid-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.game-grid-premium {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background-color: #121826;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 0 40px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.grid-cell-premium {
+  position: absolute;
+  box-sizing: border-box;
+}
+
+.floor {
+  background: repeating-linear-gradient(45deg, #1f2937, #1f2937 10px, #1a202c 10px, #1a202c 20px);
+  opacity: 0.5;
+}
+
+.wall {
+  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+  box-shadow: inset 2px 2px 5px rgba(255,255,255,0.1), inset -2px -2px 5px rgba(0,0,0,0.5);
+  border-radius: 4px;
+}
+
+.goal {
+  background: rgba(234, 179, 8, 0.2);
+}
+
+.goal-glow {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(234, 179, 8, 0.8) 0%, transparent 80%);
+  animation: breathe 2s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.5; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* Vision Cone */
+.vision-tile {
+  position: absolute;
+  background: rgba(220, 38, 38, 0.4);
+  box-shadow: 0 0 15px rgba(220, 38, 38, 0.6);
+  z-index: 5;
+  border-radius: 4px;
+  animation: pulse-vision 1.5s infinite alternate;
+}
+
+@keyframes pulse-vision {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+/* Entities */
+.entity-sprite {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.entity-sprite img {
+  width: 85%;
+  height: 85%;
+  object-fit: contain;
+}
+
+.player-sprite-wrapper img {
+  filter: drop-shadow(0 0 8px rgba(166, 74, 255, 0.8));
+}
+
+.enemy-sprite-wrapper img {
+  filter: drop-shadow(0 0 10px rgba(220, 38, 38, 0.8));
+}
+
+/* Premium Controls */
+.controls-premium {
+  height: 180px;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 20px;
+  z-index: 20;
+}
+
+.glass-d-pad {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 50%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.d-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.d-btn {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.d-btn:active {
+  background: rgba(166, 74, 255, 0.4);
+  transform: scale(0.9);
+  box-shadow: 0 0 15px rgba(166, 74, 255, 0.5);
+  border-color: rgba(166, 74, 255, 0.8);
+}
+
+.up { top: 5px; left: 50%; transform: translateX(-50%); }
+.down { bottom: 5px; left: 50%; transform: translateX(-50%); }
+.left { top: 50%; left: 5px; transform: translateY(-50%); }
+.right { top: 50%; right: 5px; transform: translateY(-50%); }
+.up:active { transform: translateX(-50%) scale(0.9); }
+.down:active { transform: translateX(-50%) scale(0.9); }
+.left:active { transform: translateY(-50%) scale(0.9); }
+.right:active { transform: translateY(-50%) scale(0.9); }
