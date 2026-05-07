@@ -1,214 +1,146 @@
-/* Stage 4 CSS - Magical Concert */
-
 .stage4-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
   width: 100%;
+  height: 100vh;
+  background: radial-gradient(circle at center, #1a0b2e 0%, #05020a 100%);
   position: relative;
   overflow: hidden;
-  background-color: #050b14;
-}
-
-.concert-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  z-index: 0;
-  opacity: 0.6;
-}
-
-.moon-aura {
-  position: absolute;
-  top: 30%;
-  left: 50%;
-  width: 300px;
-  height: 300px;
-  margin-left: -150px;
-  margin-top: -150px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 230, 100, 0.4) 40%, transparent 70%);
-  z-index: 1;
-  transition: transform 0.1s ease-out, opacity 0.1s ease-out;
-  pointer-events: none;
-}
-
-.idol-wrapper {
-  position: absolute;
-  bottom: 15%;
-  left: 50%;
-  transform: translateX(-50%);
-  height: 60%;
-  z-index: 2;
+  color: white;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
 }
 
-.idol-image {
-  height: 100%;
-  object-fit: contain;
-  transition: filter 0.1s ease-out;
-}
-
-.lyrics-display {
-  position: absolute;
-  top: 10%;
-  width: 100%;
-  text-align: center;
-  z-index: 10;
-  padding: 0 20px;
-  box-sizing: border-box;
-}
-
-.lyric-text {
-  font-family: 'Noto Serif KR', 'Georgia', serif;
-  font-size: 1.5rem;
-  color: #fff;
-  text-shadow: 0 0 10px rgba(0,0,0,0.8), 0 0 20px #a64aff;
-  margin-bottom: 10px;
-  min-height: 2.5rem;
-}
-
-.volume-bar-container {
-  width: 60%;
-  height: 6px;
-  background: rgba(255,255,255,0.2);
-  margin: 0 auto;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.volume-bar {
-  height: 100%;
-  background: linear-gradient(90deg, #a64aff, #ff6bcb);
-  transition: width 0.1s ease-out;
-}
-
-.audience-area {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 25%;
-  z-index: 5;
-  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
-  pointer-events: none;
-}
-
-.light-stick {
-  position: absolute;
-  width: 6px;
-  height: 25px;
-  border-radius: 3px;
-  animation: wave infinite alternate ease-in-out;
-}
-
-@keyframes wave {
-  0% { transform: rotate(-15deg) translateY(0); }
-  100% { transform: rotate(15deg) translateY(-10px); }
-}
-
-/* Mic Request Screen */
 .mic-request-screen {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background: url('/assets/concert_bg.png') center/cover;
+  height: 100%;
 }
 
 .mic-card {
+  padding: 3rem;
   text-align: center;
-  padding: 30px;
-  border-radius: 15px;
-  max-width: 80%;
-  background: rgba(10, 10, 30, 0.7);
-  color: white;
+  max-width: 500px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.mic-card h2 {
-  color: #ff6bcb;
-  margin-top: 0;
+.concert-header {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 40px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  z-index: 20;
 }
 
-.mic-hint {
-  color: #a0aec0;
-  font-size: 0.9rem;
-  margin-bottom: 25px;
+.piano-roll-container {
+  position: absolute;
+  top: 80px;
+  left: 5%;
+  width: 90%;
+  height: 300px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 107, 203, 0.3);
+  overflow: hidden;
+  z-index: 15;
 }
 
-.start-btn {
-  background: linear-gradient(45deg, #a64aff, #ff6bcb);
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 25px;
-  font-size: 1.1rem;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(166, 74, 255, 0.4);
+.pitch-canvas {
+  width: 100%;
+  height: 100%;
 }
 
-.start-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(166, 74, 255, 0.6);
+.pitch-label {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 2px;
 }
 
-/* Ending Screen */
+.stage-visuals {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  position: relative;
+  padding-bottom: 50px;
+}
+
+.idol-img {
+  height: 60vh;
+  object-fit: contain;
+  z-index: 10;
+  filter: drop-shadow(0 0 20px rgba(255, 107, 203, 0.5));
+}
+
+.idol-glow {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255, 107, 203, 0.4) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 5;
+  transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+}
+
+.lyrics-overlay {
+  position: absolute;
+  bottom: 40px;
+  width: 100%;
+  text-align: center;
+  z-index: 20;
+}
+
+.lyrics-overlay h2 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 2.5rem;
+  background: linear-gradient(to bottom, #fff, #ffafbd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(255, 107, 203, 0.8);
+  margin: 0;
+}
+
 .ending-screen {
+  width: 100%;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: #fff;
-  color: #333;
+  background: black;
 }
 
 .ending-content {
+  padding: 4rem;
   text-align: center;
-  padding: 40px;
-  animation: slideUp 10s linear;
+  max-width: 800px;
 }
 
-.ending-content h1 {
-  font-family: 'Noto Serif KR', serif;
-  color: #a64aff;
-  font-size: 2rem;
-  margin-bottom: 20px;
+.final-score {
+  font-size: 3rem;
+  margin: 2rem 0;
+  color: #00f2fe;
+  text-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
 }
 
-.ending-content h3 {
+.combo {
   color: #ff6bcb;
-  font-size: 1.5rem;
+  font-weight: bold;
 }
 
-.ending-content p {
-  font-size: 1.1rem;
-  line-height: 1.8;
-  color: #555;
+@keyframes bump {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 
-.credits {
-  font-size: 0.9rem !important;
-  color: #888 !important;
-  margin-top: 10px;
-}
-
-@keyframes slideUp {
-  0% { transform: translateY(50px); opacity: 0; }
-  10% { transform: translateY(0); opacity: 1; }
-  90% { transform: translateY(0); opacity: 1; }
-  100% { transform: translateY(-20px); opacity: 0; }
-}
-
-.fade-in-fast {
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-.fade-in-slow {
-  animation: fadeIn 2s ease-in-out;
+.combo.active {
+  animation: bump 0.1s ease-out;
 }

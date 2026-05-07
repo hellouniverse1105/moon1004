@@ -1,192 +1,189 @@
-.stage1-container {
+/* Stage 1 Escape Room CSS */
+
+.stage1-escape-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
   width: 100%;
-  background: radial-gradient(circle at 50% 0%, #1a2a40 0%, #0d1423 100%);
-  color: white;
   position: relative;
-}
-
-/* Glassmorphism Header */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 15px 20px;
-  text-align: center;
-  z-index: 20;
-}
-
-.glass-panel h2 {
-  margin: 0;
-  font-size: 1.3rem;
-  color: #a64aff;
-  text-shadow: 0 0 10px rgba(166, 74, 255, 0.5);
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-
-.glass-panel p {
-  margin: 5px 0 0 0;
-  font-size: 0.85rem;
-  color: #a0aec0;
-}
-
-/* Premium Game Grid */
-.game-grid-wrapper {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
   overflow: hidden;
+  background-color: #000;
 }
 
-.game-grid-premium {
+.escape-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  position: relative;
-  background-color: #121826;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 0 40px rgba(0, 0, 0, 0.9);
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
 }
 
-.grid-cell-premium {
+.escape-header {
   position: absolute;
-  box-sizing: border-box;
-}
-
-.floor {
-  background: repeating-linear-gradient(45deg, #1f2937, #1f2937 10px, #1a202c 10px, #1a202c 20px);
-  opacity: 0.5;
-}
-
-.wall {
-  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
-  box-shadow: inset 2px 2px 5px rgba(255,255,255,0.1), inset -2px -2px 5px rgba(0,0,0,0.5);
-  border-radius: 4px;
-}
-
-.goal {
-  background: rgba(234, 179, 8, 0.2);
-}
-
-.goal-glow {
+  top: 0;
   width: 100%;
-  height: 100%;
-  background: radial-gradient(circle, rgba(234, 179, 8, 0.8) 0%, transparent 80%);
-  animation: breathe 2s ease-in-out infinite;
-}
-
-@keyframes breathe {
-  0%, 100% { opacity: 0.5; transform: scale(0.9); }
-  50% { opacity: 1; transform: scale(1.1); }
-}
-
-/* Vision Cone */
-.vision-tile {
-  position: absolute;
-  background: rgba(220, 38, 38, 0.4);
-  box-shadow: 0 0 15px rgba(220, 38, 38, 0.6);
-  z-index: 5;
-  border-radius: 4px;
-  animation: pulse-vision 1.5s infinite alternate;
-}
-
-@keyframes pulse-vision {
-  from { opacity: 0.7; }
-  to { opacity: 1; }
-}
-
-/* Entities */
-.entity-sprite {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 10;
 }
 
-.entity-sprite img {
-  width: 85%;
-  height: 85%;
-  object-fit: contain;
-}
-
-.player-sprite-wrapper img {
-  filter: drop-shadow(0 0 8px rgba(166, 74, 255, 0.8));
-}
-
-.enemy-sprite-wrapper img {
-  filter: drop-shadow(0 0 10px rgba(220, 38, 38, 0.8));
-}
-
-/* Premium Controls */
-.controls-premium {
-  height: 180px;
-  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-bottom: 20px;
-  z-index: 20;
-}
-
-.glass-d-pad {
-  position: relative;
-  width: 140px;
-  height: 140px;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 50%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.1);
-}
-
-.d-center {
+.clickable-area {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 40px;
-  height: 40px;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.d-btn {
-  position: absolute;
-  width: 46px;
-  height: 46px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
   cursor: pointer;
-  transition: all 0.2s ease;
-  padding: 0;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  z-index: 5;
 }
 
-.d-btn:active {
-  background: rgba(166, 74, 255, 0.4);
-  transform: scale(0.9);
-  box-shadow: 0 0 15px rgba(166, 74, 255, 0.5);
-  border-color: rgba(166, 74, 255, 0.8);
+.glow-indicator {
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+  animation: pulse-glow 2s infinite alternate;
 }
 
-.up { top: 5px; left: 50%; transform: translateX(-50%); }
-.down { bottom: 5px; left: 50%; transform: translateX(-50%); }
-.left { top: 50%; left: 5px; transform: translateY(-50%); }
-.right { top: 50%; right: 5px; transform: translateY(-50%); }
-.up:active { transform: translateX(-50%) scale(0.9); }
-.down:active { transform: translateX(-50%) scale(0.9); }
-.left:active { transform: translateY(-50%) scale(0.9); }
-.right:active { transform: translateY(-50%) scale(0.9); }
+@keyframes pulse-glow {
+  0% { opacity: 0.2; transform: scale(0.95); }
+  100% { opacity: 0.8; transform: scale(1.05); }
+}
+
+/* Approximate positions based on a typical room setup */
+.picture-frame {
+  top: 20%;
+  left: 15%;
+  width: 60px;
+  height: 80px;
+}
+
+.treasure-chest {
+  bottom: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 120px;
+}
+
+/* Modals */
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hint-modal {
+  background: rgba(25, 25, 35, 0.95);
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  border: 1px solid rgba(166, 74, 255, 0.5);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  width: 80%;
+}
+
+.hint-text {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 10px #a64aff;
+  margin: 20px 0;
+  letter-spacing: 5px;
+}
+
+.hint-desc {
+  color: #a0aec0;
+  margin-bottom: 30px;
+}
+
+.keypad-modal {
+  background: #1a1a24;
+  padding: 25px;
+  border-radius: 20px;
+  width: 80%;
+  max-width: 320px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+  border: 2px solid #333;
+}
+
+.password-display {
+  background: #000;
+  color: #0f0;
+  padding: 15px;
+  font-family: monospace;
+  font-size: 1.8rem;
+  letter-spacing: 8px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px inset #222;
+}
+
+.keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.key-btn {
+  background: #2d2d3a;
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  padding: 15px 0;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #15151e;
+  transition: all 0.1s;
+}
+
+.key-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 #15151e;
+}
+
+.action-btn { background: #4a4a5a; }
+.submit { background: #a64aff; color: white; }
+
+.close-btn {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  padding: 10px 30px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.mt-10 { margin-top: 20px; }
+
+/* Unlocked State */
+.unlocked-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(166,74,255,0.7) 100%);
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.unlocked-content {
+  text-align: center;
+  color: #111;
+}
+
+.glowing-text {
+  font-size: 3rem;
+  color: #fff;
+  text-shadow: 0 0 20px #ff6bcb;
+}

@@ -1,169 +1,101 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
 import './Stage1.css';
 
-const GRID_WIDTH = 10;
-const GRID_HEIGHT = 15;
+function Stage1Escape({ onComplete }) {
+  const [showHint, setShowHint] = useState(false);
+  const [showKeypad, setShowKeypad] = useState(false);
+  const [password, setPassword] = useState('');
+  const [isUnlocked, setIsUnlocked] = useState(false);
 
-// 0: Floor, 1: Wall, 2: Goal
-const MAP_DATA = [
-  [1, 1, 1, 1, 1, 1, 1, 1, 2, 1],
-  [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-  [1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
-  [1, 0, 1, 0, 0, 0, 0, 1, 0, 1],
-  [1, 0, 1, 1, 1, 1, 0, 1, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 1, 1, 0, 1, 1, 1, 1, 0, 1],
-  [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-  [1, 0, 1, 1, 1, 0, 1, 1, 1, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 1, 1, 1, 0, 1, 1, 1, 0, 1],
-  [1, 0, 0, 0, 0, 1, 0, 0, 0, 1],
-  [1, 0, 1, 1, 1, 1, 0, 1, 1, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-];
+  const CORRECT_PASSWORD = '30021004';
 
-function Stage1Stealth({ onComplete, onGameOver }) {
-  const [playerPos, setPlayerPos] = useState({ x: 1, y: 13 });
-  const [enemyPos, setEnemyPos] = useState({ x: 5, y: 5 });
-  const [enemyDir, setEnemyDir] = useState(1);
-
-  // Vision cone tiles based on enemy pos and dir
-  const getVisionCone = (ex, ey, dir) => {
-    return [
-      { x: ex + dir, y: ey },
-      { x: ex + dir * 2, y: ey },
-      { x: ex + dir * 2, y: ey - 1 },
-      { x: ex + dir * 2, y: ey + 1 },
-    ].filter(v => 
-      v.x >= 0 && v.x < GRID_WIDTH && 
-      v.y >= 0 && v.y < GRID_HEIGHT && 
-      MAP_DATA[v.y][v.x] !== 1 // Cannot see through walls
-    );
+  const handleKeypadPress = (num) => {
+    if (password.length < 8) {
+      setPassword(prev => prev + num);
+    }
   };
 
-  const visionCone = getVisionCone(enemyPos.x, enemyPos.y, enemyDir);
+  const handleClear = () => {
+    setPassword('');
+  };
 
-  const movePlayer = useCallback((dx, dy) => {
-    setPlayerPos(prev => {
-      const newX = prev.x + dx;
-      const newY = prev.y + dy;
-      if (newX >= 0 && newX < GRID_WIDTH && newY >= 0 && newY < GRID_HEIGHT) {
-        if (MAP_DATA[newY][newX] !== 1) { // Not a wall
-          return { x: newX, y: newY };
-        }
-      }
-      return prev;
-    });
-  }, []);
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'ArrowUp') movePlayer(0, -1);
-      if (e.key === 'ArrowDown') movePlayer(0, 1);
-      if (e.key === 'ArrowLeft') movePlayer(-1, 0);
-      if (e.key === 'ArrowRight') movePlayer(1, 0);
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [movePlayer]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setEnemyPos(prev => {
-        let nextX = prev.x + enemyDir;
-        if (nextX >= GRID_WIDTH || nextX < 0 || MAP_DATA[prev.y][nextX] === 1) {
-          setEnemyDir(enemyDir * -1);
-          return prev;
-        }
-        return { ...prev, x: nextX };
-      });
-    }, 800);
-    return () => clearInterval(interval);
-  }, [enemyDir]);
-
-  useEffect(() => {
-    // Check Goal
-    if (MAP_DATA[playerPos.y][playerPos.x] === 2) {
-      setTimeout(onComplete, 300);
-      return;
+  const handleSubmit = () => {
+    if (password === CORRECT_PASSWORD) {
+      setIsUnlocked(true);
+      setTimeout(() => {
+        onComplete();
+      }, 3000); // Wait 3 seconds to show unlocked animation
+    } else {
+      alert('비밀번호가 틀렸습니다!');
+      setPassword('');
     }
-    
-    // Check Game Over
-    const isPlayerInVision = visionCone.some(v => v.x === playerPos.x && v.y === playerPos.y);
-    const isPlayerOnEnemy = playerPos.x === enemyPos.x && playerPos.y === enemyPos.y;
-    
-    if (isPlayerInVision || isPlayerOnEnemy) {
-      setTimeout(onGameOver, 300);
-    }
-  }, [playerPos, enemyPos, visionCone, onComplete, onGameOver]);
+  };
 
   return (
-    <div className="stage1-container fade-in">
-      <div className="stage-header glass-panel">
-        <h2>Stage 1: 할머니의 눈을 피해서!</h2>
-        <p>붉은 시야를 피해 노란색 현관문으로 가세요</p>
+    <div className="stage1-escape-container fade-in">
+      <div className="escape-bg" style={{ backgroundImage: 'url(/assets/room_escape_bg.png)' }}></div>
+      
+      {/* Clickable Areas */}
+      <div className="clickable-area picture-frame" onClick={() => setShowHint(true)}>
+        <div className="glow-indicator"></div>
       </div>
       
-      <div className="game-grid-wrapper">
-        <div className="game-grid-premium">
-          {/* Render Map */}
-          {MAP_DATA.map((row, y) => 
-            row.map((cell, x) => (
-              <div 
-                key={`cell-${x}-${y}`} 
-                className={`grid-cell-premium ${cell === 1 ? 'wall' : cell === 2 ? 'goal' : 'floor'}`}
-                style={{ left: `${x * 10}%`, top: `${y * (100 / 15)}%`, width: '10%', height: `${100 / 15}%` }}
-              >
-                {cell === 2 && <div className="goal-glow"></div>}
-              </div>
-            ))
-          )}
-
-          {/* Render Vision Cone */}
-          {visionCone.map((v, i) => (
-             <div 
-               key={`vision-${i}`} 
-               className="vision-tile"
-               style={{ left: `${v.x * 10}%`, top: `${v.y * (100 / 15)}%`, width: '10%', height: `${100 / 15}%` }}
-             ></div>
-          ))}
-
-          {/* Render Enemy */}
-          <motion.div 
-            className="entity-sprite enemy-sprite-wrapper"
-            animate={{ left: `${enemyPos.x * 10}%`, top: `${enemyPos.y * (100 / 15)}%` }}
-            transition={{ type: 'tween', duration: 0.3 }}
-            style={{ width: '10%', height: `${100 / 15}%` }}
-          >
-            <img src="/assets/grandma_chibi.png" alt="Grandma" />
-          </motion.div>
-
-          {/* Render Player */}
-          <motion.div 
-            className="entity-sprite player-sprite-wrapper"
-            animate={{ left: `${playerPos.x * 10}%`, top: `${playerPos.y * (100 / 15)}%` }}
-            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            style={{ width: '10%', height: `${100 / 15}%` }}
-          >
-            <img src="/assets/luna_chibi.png" alt="Luna" />
-          </motion.div>
-        </div>
+      <div className="clickable-area treasure-chest" onClick={() => setShowKeypad(true)}>
+        <div className="glow-indicator"></div>
       </div>
 
-      <div className="controls-premium">
-        <div className="glass-d-pad">
-          <button className="d-btn up" onClick={() => movePlayer(0, -1)}><ArrowUp size={28}/></button>
-          <button className="d-btn left" onClick={() => movePlayer(-1, 0)}><ArrowLeft size={28}/></button>
-          <button className="d-btn right" onClick={() => movePlayer(1, 0)}><ArrowRight size={28}/></button>
-          <button className="d-btn down" onClick={() => movePlayer(0, 1)}><ArrowDown size={28}/></button>
-          <div className="d-center"></div>
-        </div>
+      {/* Header Info */}
+      <div className="escape-header glass-panel">
+        <h2>Stage 1: 타토의 보물상자</h2>
+        <p>방 안의 단서를 찾아 상자의 봉인을 푸세요.</p>
       </div>
+
+      {/* Hint Modal */}
+      {showHint && (
+        <div className="modal-overlay fade-in-fast" onClick={() => setShowHint(false)}>
+          <div className="hint-modal" onClick={e => e.stopPropagation()}>
+            <h3>액자 속 단서</h3>
+            <p className="hint-text">MOON 천사</p>
+            <p className="hint-desc">(숫자로 어떻게 표현할 수 있을까?)</p>
+            <button className="close-btn" onClick={() => setShowHint(false)}>닫기</button>
+          </div>
+        </div>
+      )}
+
+      {/* Keypad Modal */}
+      {showKeypad && !isUnlocked && (
+        <div className="modal-overlay fade-in-fast" onClick={() => setShowKeypad(false)}>
+          <div className="keypad-modal" onClick={e => e.stopPropagation()}>
+            <h3>자물쇠 다이얼</h3>
+            <div className="password-display">
+              {password.padEnd(8, '_').split('').map((char, idx) => (
+                <span key={idx} className="pwd-char">{char}</span>
+              ))}
+            </div>
+            <div className="keypad-grid">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
+                <button key={num} className="key-btn" onClick={() => handleKeypadPress(num.toString())}>{num}</button>
+              ))}
+              <button className="key-btn action-btn" onClick={handleClear}>C</button>
+              <button className="key-btn" onClick={() => handleKeypadPress('0')}>0</button>
+              <button className="key-btn action-btn submit" onClick={handleSubmit}>E</button>
+            </div>
+            <button className="close-btn mt-10" onClick={() => setShowKeypad(false)}>닫기</button>
+          </div>
+        </div>
+      )}
+
+      {/* Unlocked Overlay */}
+      {isUnlocked && (
+        <div className="unlocked-overlay fade-in-slow">
+          <div className="unlocked-content">
+            <h1 className="glowing-text">봉인 해제!</h1>
+            <p>타토의 힘을 되찾아 풀문으로 변신할 수 있게 되었습니다!</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-export default Stage1Stealth;
+export default Stage1Escape;
