@@ -2,77 +2,135 @@ import React, { useState, useEffect, useRef } from 'react';
 import './Stage2.css';
 
 // ✅ 달빛천사 Myself 전체 가사 (105초) — librosa onset 분석 기반
-const BEATS = [
-  // --- 1절: "다신 울지 않을래" ---
-  { time: 4.3,  text: "다" }, { time: 4.6,  text: "신" }, { time: 5.2,  text: "울" },
-  { time: 5.9,  text: "지" }, { time: 6.2,  text: "않" }, { time: 6.4,  text: "을" },
-  { time: 6.5,  text: "래" },
-  // "모진 시련 앞에도"
-  { time: 7.2,  text: "모" }, { time: 8.4,  text: "진" }, { time: 9.7,  text: "시" },
-  { time: 11.0, text: "련" }, { time: 11.7, text: "앞" }, { time: 13.6, text: "에" },
-  { time: 14.9, text: "도" },
-  // "나 언제나 당당히 웃을 수 있게"
-  { time: 15.5, text: "나" }, { time: 16.1, text: "언" }, { time: 16.3, text: "제" },
-  { time: 16.4, text: "나" }, { time: 16.6, text: "당" }, { time: 17.1, text: "당" },
-  { time: 17.4, text: "히" }, { time: 18.5, text: "웃" }, { time: 18.7, text: "을" },
-  { time: 19.3, text: "있" }, { time: 19.6, text: "게" },
-  // "아픈 이별의 눈물에"
-  { time: 20.9, text: "아" }, { time: 21.1, text: "픈" }, { time: 21.2, text: "이" },
-  { time: 21.9, text: "별" }, { time: 22.2, text: "의" }, { time: 22.4, text: "눈" },
-  { time: 22.5, text: "물" },
-  // "아무런 말도 못하고"
-  { time: 23.1, text: "아" }, { time: 23.8, text: "무" }, { time: 24.4, text: "런" },
-  { time: 24.7, text: "말" }, { time: 25.1, text: "고" },
-  // "떠나는 뒷모습만 새겼죠"
-  { time: 26.0, text: "떠" }, { time: 26.2, text: "나" }, { time: 26.3, text: "는" },
-  { time: 27.6, text: "뒷" }, { time: 28.9, text: "습" }, { time: 29.2, text: "만" },
-  { time: 29.9, text: "새" }, { time: 30.2, text: "겼" }, { time: 30.7, text: "죠" },
-  // "어렸던 그때의 나에겐"
-  { time: 31.4, text: "어" }, { time: 31.8, text: "렸" }, { time: 32.1, text: "던" },
-  { time: 32.7, text: "나" }, { time: 33.0, text: "에" }, { time: 33.4, text: "겐" },
-  // --- 간주 (34~38s) — 노트 없음 ---
-  // "세상이 무너지듯 어쩔 줄 몰랐죠"
-  { time: 38.1, text: "세" }, { time: 38.5, text: "상" }, { time: 38.6, text: "이" },
-  { time: 39.1, text: "무" }, { time: 39.4, text: "너" }, { time: 39.6, text: "지" },
-  { time: 40.4, text: "듯" }, { time: 41.3, text: "어" }, { time: 41.7, text: "쩔" },
-  { time: 42.9, text: "줄" }, { time: 44.2, text: "몰" }, { time: 44.6, text: "랐" },
-  { time: 45.5, text: "죠" },
-  // "아물어 갈 시간이 지나 알았죠"
-  { time: 46.5, text: "아" }, { time: 46.8, text: "물" }, { time: 47.4, text: "어" },
-  { time: 48.0, text: "갈" }, { time: 49.0, text: "시" }, { time: 49.3, text: "간" },
-  { time: 50.6, text: "이" }, { time: 51.9, text: "지" }, { time: 53.1, text: "나" },
-  { time: 53.5, text: "알" }, { time: 54.4, text: "았" }, { time: 55.1, text: "죠" },
-  // "마음속에 남은 그대를"
-  { time: 55.4, text: "마" }, { time: 55.7, text: "음" }, { time: 56.0, text: "속" },
-  { time: 56.3, text: "에" }, { time: 56.8, text: "남" }, { time: 57.6, text: "그" },
-  { time: 58.3, text: "대" }, { time: 59.5, text: "를" },
-  // "서로 몰래 닮아간 나와 그대"
-  { time: 60.2, text: "서" }, { time: 60.7, text: "로" }, { time: 61.1, text: "몰" },
-  { time: 61.5, text: "래" }, { time: 61.8, text: "닮" }, { time: 62.1, text: "아" },
-  { time: 62.5, text: "간" }, { time: 64.6, text: "나" }, { time: 65.3, text: "와" },
-  { time: 65.9, text: "그" }, { time: 67.2, text: "대" },
-  // "나를 지켜 주었던"
-  { time: 67.5, text: "나" }, { time: 69.7, text: "를" }, { time: 71.0, text: "지" },
-  { time: 72.3, text: "켜" }, { time: 73.6, text: "주" }, { time: 74.8, text: "었" },
-  // --- 간주 (75~78s) — 노트 없음 ---
-  // 후렴 "다신 울지 않을래 모진 시련"
-  { time: 78.7, text: "다" }, { time: 79.4, text: "신" }, { time: 80.0, text: "울" },
-  { time: 80.8, text: "지" }, { time: 81.2, text: "않" }, { time: 81.9, text: "을" },
-  { time: 82.5, text: "래" }, { time: 82.7, text: "모" }, { time: 82.8, text: "진" },
-  { time: 83.0, text: "시" },
-  // --- 브릿지: "다시 만날 운명을" ---
-  { time: 86.3, text: "다" }, { time: 87.3, text: "시" }, { time: 87.5, text: "만" },
-  { time: 87.6, text: "날" }, { time: 88.9, text: "운" }, { time: 89.2, text: "명" },
-  { time: 90.2, text: "을" },
-  // "내 가슴속에 새겼죠"
-  { time: 91.4, text: "내" }, { time: 92.1, text: "가" }, { time: 92.4, text: "슴" },
-  { time: 92.7, text: "속" }, { time: 94.0, text: "에" }, { time: 95.3, text: "새" },
-  { time: 97.8, text: "겼" }, { time: 100.4, text: "죠" },
-  // "시간이 지나도 꼭"
-  { time: 101.2, text: "시" }, { time: 101.5, text: "간" }, { time: 101.7, text: "이" },
-  { time: 102.0, text: "지" }, { time: 102.5, text: "나" }, { time: 103.3, text: "도" },
-  { time: 103.4, text: "꼭" },
+// 1. 설정값 (영상의 실제 속도나 시작점에 맞춰 미세 조절 가능)
+const BPM = 74; // 곡의 템포 (빠르면 숫자를 높이고, 느리면 낮추세요)
+const START_TIME_SEC = 0.0; // 첫 가사 '다'가 시작되는 시간 (초)
+const BEAT_DURATION = 60 / BPM; // 1박자(4분음표)가 차지하는 시간(초)
+
+// 2. 악보 데이터
+// note: 음표 길이 (0.5 = 8분음표, 1.0 = 4분음표, 2.0 = 2분음표, 3.0 = 점2분음표)
+// rest: 해당 글자를 부르고 나서 간주나 숨을 쉬기 위해 비우는 '박자' 길이
+const sheetMusic = [
+  // --- Intro ---
+  { text: "다", note: 0.5, rest: 0 }, { text: "신", note: 0.5, rest: 0 },
+  { text: "울", note: 1.0, rest: 0 }, { text: "지", note: 1.0, rest: 0 },
+  { text: "않", note: 0.5, rest: 0 }, { text: "을", note: 0.5, rest: 0 },
+  { text: "래", note: 2.0, rest: 1.0 }, // 2박자 부르고 1박자 쉼
+
+  { text: "모", note: 0.5, rest: 0 }, { text: "진", note: 0.5, rest: 0 },
+  { text: "시", note: 1.0, rest: 0 }, { text: "련", note: 1.0, rest: 0 },
+  { text: "앞", note: 0.5, rest: 0 }, { text: "에", note: 0.5, rest: 0 },
+  { text: "도", note: 2.0, rest: 1.0 },
+
+  { text: "나", note: 0.5, rest: 0 }, { text: "언", note: 0.5, rest: 0 },
+  { text: "제", note: 0.5, rest: 0 }, { text: "나", note: 0.5, rest: 0 },
+  { text: "당", note: 0.5, rest: 0 }, { text: "당", note: 0.5, rest: 0 },
+  { text: "히", note: 1.0, rest: 0 }, { text: "웃", note: 0.5, rest: 0 },
+  { text: "을", note: 0.5, rest: 0 }, { text: "수", note: 0.5, rest: 0 },
+  { text: "있", note: 0.5, rest: 0 }, 
+  { text: "게", note: 2.0, rest: 32.0 }, // 1절 시작 전 긴 간주 (약 8마디 대기)
+
+  // --- Verse 1 ---
+  { text: "아", note: 1.0, rest: 0 }, { text: "픈", note: 0.5, rest: 0 },
+  { text: "이", note: 0.5, rest: 0 }, { text: "별", note: 0.5, rest: 0 },
+  { text: "의", note: 0.5, rest: 0 }, { text: "눈", note: 1.0, rest: 0 },
+  { text: "물", note: 1.0, rest: 0 }, { text: "에", note: 2.0, rest: 1.0 },
+
+  { text: "아", note: 1.0, rest: 0 }, { text: "무", note: 0.5, rest: 0 },
+  { text: "런", note: 0.5, rest: 0 }, { text: "말", note: 0.5, rest: 0 },
+  { text: "도", note: 0.5, rest: 0 }, { text: "못", note: 1.0, rest: 0 },
+  { text: "하", note: 1.0, rest: 0 }, { text: "고", note: 2.0, rest: 1.0 },
+
+  { text: "떠", note: 1.0, rest: 0 }, { text: "나", note: 0.5, rest: 0 },
+  { text: "는", note: 0.5, rest: 0 }, { text: "뒷", note: 0.5, rest: 0 },
+  { text: "모", note: 0.5, rest: 0 }, { text: "습", note: 1.0, rest: 0 },
+  { text: "만", note: 1.0, rest: 0 }, { text: "새", note: 1.0, rest: 0 },
+  { text: "겼", note: 1.0, rest: 0 }, { text: "죠", note: 2.0, rest: 1.0 },
+
+  { text: "어", note: 1.0, rest: 0 }, { text: "렸", note: 0.5, rest: 0 },
+  { text: "던", note: 0.5, rest: 0 }, { text: "그", note: 0.5, rest: 0 },
+  { text: "때", note: 0.5, rest: 0 }, { text: "의", note: 0.5, rest: 0 },
+  { text: "나", note: 0.5, rest: 0 }, { text: "에", note: 1.0, rest: 0 },
+  { text: "겐", note: 3.0, rest: 1.0 },
+
+  // --- Pre-Chorus ---
+  { text: "세", note: 0.5, rest: 0 }, { text: "상", note: 0.5, rest: 0 },
+  { text: "이", note: 0.5, rest: 0 }, { text: "무", note: 0.5, rest: 0 },
+  { text: "너", note: 1.0, rest: 0 }, { text: "지", note: 1.0, rest: 0 },
+  { text: "듯", note: 2.0, rest: 1.0 },
+  
+  { text: "어", note: 0.5, rest: 0 }, { text: "쩔", note: 0.5, rest: 0 },
+  { text: "줄", note: 1.0, rest: 0 }, { text: "몰", note: 1.0, rest: 0 },
+  { text: "랐", note: 2.0, rest: 0 }, { text: "죠", note: 2.0, rest: 1.0 },
+
+  { text: "아", note: 0.5, rest: 0 }, { text: "물", note: 0.5, rest: 0 },
+  { text: "어", note: 0.5, rest: 0 }, { text: "갈", note: 0.5, rest: 0 },
+  { text: "시", note: 1.0, rest: 0 }, { text: "간", note: 1.0, rest: 0 },
+  { text: "이", note: 2.0, rest: 1.0 },
+  
+  { text: "지", note: 0.5, rest: 0 }, { text: "나", note: 0.5, rest: 0 },
+  { text: "알", note: 1.0, rest: 0 }, { text: "았", note: 2.0, rest: 0 },
+  { text: "죠", note: 2.0, rest: 1.0 },
+
+  { text: "마", note: 0.5, rest: 0 }, { text: "음", note: 0.5, rest: 0 },
+  { text: "속", note: 0.5, rest: 0 }, { text: "에", note: 0.5, rest: 0 },
+  { text: "남", note: 0.5, rest: 0 }, { text: "은", note: 0.5, rest: 0 },
+  { text: "그", note: 1.0, rest: 0 }, { text: "대", note: 1.0, rest: 0 },
+  { text: "를", note: 2.0, rest: 1.0 },
+
+  { text: "서", note: 0.5, rest: 0 }, { text: "로", note: 0.5, rest: 0 },
+  { text: "몰", note: 0.5, rest: 0 }, { text: "래", note: 0.5, rest: 0 },
+  { text: "닮", note: 0.5, rest: 0 }, { text: "아", note: 0.5, rest: 0 },
+  { text: "간", note: 1.0, rest: 0 }, { text: "나", note: 1.0, rest: 0 },
+  { text: "와", note: 1.0, rest: 0 }, { text: "그", note: 1.0, rest: 0 },
+  { text: "대", note: 2.0, rest: 1.0 },
+
+  { text: "나", note: 1.0, rest: 0 }, { text: "를", note: 1.0, rest: 0 },
+  { text: "지", note: 1.0, rest: 0 }, { text: "켜", note: 1.0, rest: 0 },
+  { text: "주", note: 1.0, rest: 0 }, { text: "었", note: 1.0, rest: 0 },
+  { text: "던", note: 2.0, rest: 1.0 },
+
+  // --- Chorus ---
+  { text: "다", note: 0.5, rest: 0 }, { text: "신", note: 0.5, rest: 0 },
+  { text: "울", note: 1.0, rest: 0 }, { text: "지", note: 1.0, rest: 0 },
+  { text: "않", note: 0.5, rest: 0 }, { text: "을", note: 0.5, rest: 0 },
+  { text: "래", note: 2.0, rest: 1.0 },
+
+  { text: "모", note: 0.5, rest: 0 }, { text: "진", note: 0.5, rest: 0 },
+  { text: "시", note: 1.0, rest: 0 }, { text: "련", note: 1.0, rest: 0 },
+  { text: "앞", note: 0.5, rest: 0 }, { text: "에", note: 0.5, rest: 0 },
+  { text: "도", note: 2.0, rest: 1.0 },
+
+  // --- Bridge ---
+  { text: "다", note: 0.5, rest: 0 }, { text: "시", note: 0.5, rest: 0 },
+  { text: "만", note: 1.0, rest: 0 }, { text: "날", note: 1.0, rest: 0 },
+  { text: "운", note: 0.5, rest: 0 }, { text: "명", note: 0.5, rest: 0 },
+  { text: "을", note: 2.0, rest: 1.0 },
+
+  { text: "내", note: 1.0, rest: 0 }, { text: "가", note: 0.5, rest: 0 },
+  { text: "슴", note: 0.5, rest: 0 }, { text: "속", note: 0.5, rest: 0 },
+  { text: "에", note: 0.5, rest: 0 }, { text: "새", note: 1.0, rest: 0 },
+  { text: "겼", note: 1.0, rest: 0 }, { text: "죠", note: 3.0, rest: 1.0 },
+
+  { text: "시", note: 0.5, rest: 0 }, { text: "간", note: 0.5, rest: 0 },
+  { text: "이", note: 0.5, rest: 0 }, { text: "지", note: 0.5, rest: 0 },
+  { text: "나", note: 1.0, rest: 0 }, { text: "도", note: 1.0, rest: 0 },
+  { text: "꼭", note: 2.0, rest: 0 },
 ];
+
+// 3. 타임라인(BEATS) 자동 계산 로직
+const BEATS_CALCULATED = [];
+let calculationTime = START_TIME_SEC;
+
+sheetMusic.forEach(item => {
+  BEATS_CALCULATED.push({
+    time: Number(calculationTime.toFixed(2)),
+    text: item.text
+  });
+  calculationTime += (item.note + item.rest) * BEAT_DURATION;
+});
+
+const BEATS = BEATS_CALCULATED;
 
 // 노래 전체 길이 (간주 구간에서 game over 방지용)
 const SONG_DURATION = 105.0;
