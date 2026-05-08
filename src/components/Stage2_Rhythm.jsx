@@ -1,83 +1,61 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Stage2.css';
 
-// Simple map of notes for "나의 마음을 담아" (mocked rhythm)
-// lane: 0, 1, 2
-// time: seconds when it should hit the line
-const SONG_NOTES = [
-  // Intro beats
-  { id: 1, lane: 0, time: 3.0 }, { id: 2, lane: 2, time: 4.5 }, { id: 3, lane: 1, time: 6.0 },
-  { id: 4, lane: 0, time: 7.5 }, { id: 5, lane: 2, time: 9.0 }, { id: 6, lane: 1, time: 10.5 },
-  { id: 7, lane: 0, time: 12.0 }, { id: 8, lane: 2, time: 13.5 }, { id: 9, lane: 1, time: 15.0 },
-  
-  // 외로울 때면 (16.0 ~ 18.0)
-  { id: 10, lane: 0, time: 16.0 }, { id: 11, lane: 1, time: 16.5 },
-  { id: 12, lane: 2, time: 17.0 }, { id: 13, lane: 1, time: 17.5 }, { id: 14, lane: 0, time: 18.0 },
-  
-  // 누군가 불러 주길 바래 (19.0 ~ 22.0)
-  { id: 15, lane: 1, time: 19.0 }, { id: 16, lane: 2, time: 19.4 }, { id: 17, lane: 1, time: 19.8 },
-  { id: 18, lane: 0, time: 20.2 }, { id: 19, lane: 1, time: 20.6 }, { id: 20, lane: 2, time: 21.0 },
-  { id: 21, lane: 1, time: 21.4 }, { id: 22, lane: 0, time: 21.8 }, { id: 23, lane: 1, time: 22.2 },
-  
-  // 날 향해 웃어줄 (23.0 ~ 25.0)
-  { id: 24, lane: 2, time: 23.0 }, { id: 25, lane: 1, time: 23.5 }, { id: 26, lane: 0, time: 24.0 },
-  { id: 27, lane: 1, time: 24.5 }, { id: 28, lane: 2, time: 24.8 }, { id: 29, lane: 1, time: 25.1 },
-  
-  // 그 누군가를 (26.0 ~ 28.0)
-  { id: 30, lane: 0, time: 26.0 }, { id: 31, lane: 1, time: 26.5 }, { id: 32, lane: 2, time: 27.0 },
-  { id: 33, lane: 1, time: 27.5 }, { id: 34, lane: 0, time: 28.0 },
+// ✅ 달빛천사 나의 마음을 담아 (BPM 115) — 악보 기반 데이터
+const BPM = 115;
+const START_TIME_SEC = 2.0; // 반주 후 시작 시간
+const BEAT_DURATION = 60 / BPM;
 
-  // 부탁해 기억해 줘 (29.0 ~ 31.0)
-  { id: 35, lane: 0, time: 29.0 }, { id: 36, lane: 1, time: 29.4 }, { id: 37, lane: 2, time: 29.8 },
-  { id: 38, lane: 1, time: 30.2 }, { id: 39, lane: 0, time: 30.6 }, { id: 40, lane: 1, time: 31.0 }, { id: 41, lane: 2, time: 31.4 },
-  
-  // 오늘 하루도 기대할게 (32.0 ~ 36.5)
-  { id: 42, lane: 1, time: 32.0 }, { id: 43, lane: 0, time: 32.5 }, { id: 44, lane: 1, time: 33.0 },
-  { id: 45, lane: 2, time: 33.5 }, { id: 46, lane: 1, time: 34.0 },
-  { id: 47, lane: 0, time: 35.0 }, { id: 48, lane: 1, time: 35.5 }, { id: 49, lane: 2, time: 36.0 }, { id: 50, lane: 1, time: 36.5 },
-  
-  // 내일에 (38.0 ~ 39.0)
-  { id: 51, lane: 0, time: 38.0 }, { id: 52, lane: 1, time: 38.5 }, { id: 53, lane: 2, time: 39.0 },
-  
-  // 달빛에 물든 (43.0 ~ 45.0)
-  { id: 54, lane: 2, time: 43.0 }, { id: 55, lane: 1, time: 43.5 }, { id: 56, lane: 0, time: 44.0 },
-  { id: 57, lane: 1, time: 44.5 }, { id: 58, lane: 2, time: 45.0 },
-  
-  // 내 모습이 (46.0 ~ 48.0)
-  { id: 59, lane: 1, time: 46.0 }, { id: 60, lane: 0, time: 46.5 }, { id: 61, lane: 1, time: 47.0 },
-  { id: 62, lane: 2, time: 47.5 }, { id: 63, lane: 1, time: 48.0 },
+const sheetMusic = [
+  // --- Intro Melody ---
+  { text: "외", note: 0.5, rest: 0 }, { text: "로", note: 0.5, rest: 0 }, { text: "운", note: 0.5, rest: 0.5 },
+  { text: "사", note: 0.5, rest: 0 }, { text: "람", note: 0.5, rest: 0 }, { text: "들", note: 0.5, rest: 0 }, { text: "의", note: 1.0, rest: 0 },
 
-  // 저 하늘 별빛에 (49.0 ~ 51.5)
-  { id: 64, lane: 0, time: 49.0 }, { id: 65, lane: 1, time: 49.5 }, { id: 66, lane: 2, time: 50.0 },
-  { id: 67, lane: 1, time: 50.5 }, { id: 68, lane: 0, time: 51.0 }, { id: 69, lane: 1, time: 51.5 },
+  { text: "마", note: 0.5, rest: 0 }, { text: "음", note: 0.5, rest: 0 }, { text: "을", note: 0.5, rest: 0.5 },
+  { text: "열", note: 0.5, rest: 0 }, { text: "어", note: 0.5, rest: 0 }, { text: "줄", note: 0.5, rest: 0 }, { text: "거", note: 0.5, rest: 0 }, { text: "야", note: 1.0, rest: 1.0 },
 
-  // 닿을 때까지 (52.5 ~ 54.5)
-  { id: 70, lane: 2, time: 52.5 }, { id: 71, lane: 1, time: 53.0 }, { id: 72, lane: 0, time: 53.5 },
-  { id: 73, lane: 1, time: 54.0 }, { id: 74, lane: 2, time: 54.5 },
+  { text: "메", note: 0.5, rest: 0 }, { text: "마", note: 0.5, rest: 0 }, { text: "른", note: 0.5, rest: 0.5 },
+  { text: "가", note: 0.5, rest: 0 }, { text: "슴", note: 0.5, rest: 0 }, { text: "속", note: 0.5, rest: 0 }, { text: "을", note: 1.0, rest: 0 },
 
-  // 조금만 더 (55.5 ~ 57.0)
-  { id: 75, lane: 0, time: 55.5 }, { id: 76, lane: 1, time: 56.0 },
-  { id: 77, lane: 2, time: 56.5 }, { id: 78, lane: 1, time: 57.0 },
+  { text: "적", note: 0.5, rest: 0 }, { text: "셔", note: 0.5, rest: 0 }, { text: "줄", note: 0.5, rest: 0.5 },
+  { text: "멜", note: 0.5, rest: 0 }, { text: "로", note: 0.5, rest: 0 }, { text: "디", note: 2.0, rest: 1.0 },
 
-  // 기다려줘 (58.0 ~ 59.5)
-  { id: 79, lane: 0, time: 58.0 }, { id: 80, lane: 1, time: 58.5 },
-  { id: 81, lane: 2, time: 59.0 }, { id: 82, lane: 1, time: 59.5 },
+  // --- Verse 1 ---
+  { text: "슬", note: 0.5, rest: 0 }, { text: "픔", note: 0.5, rest: 0 }, { text: "의", note: 0.5, rest: 0.5 },
+  { text: "기", note: 0.5, rest: 0 }, { text: "억", note: 0.5, rest: 0 }, { text: "들", note: 0.5, rest: 0 }, { text: "에", note: 1.0, rest: 0 },
 
-  // 나의 마음을 (60.5 ~ 62.5)
-  { id: 83, lane: 0, time: 60.5 }, { id: 84, lane: 1, time: 61.0 }, { id: 85, lane: 2, time: 61.5 },
-  { id: 86, lane: 1, time: 62.0 }, { id: 87, lane: 0, time: 62.5 },
+  { text: "기", note: 0.5, rest: 0 }, { text: "쁨", note: 0.5, rest: 0 }, { text: "을", note: 0.5, rest: 0.5 },
+  { text: "채", note: 0.5, rest: 0 }, { text: "워", note: 0.5, rest: 0 }, { text: "줄", note: 0.5, rest: 0 }, { text: "거", note: 0.5, rest: 0 }, { text: "야", note: 1.0, rest: 1.0 },
 
-  // 담아 (63.5 ~ 64.5)
-  { id: 88, lane: 1, time: 63.5 }, { id: 89, lane: 2, time: 64.0 },
+  { text: "넘", note: 0.5, rest: 0 }, { text: "치", note: 0.5, rest: 0 }, { text: "는", note: 0.5, rest: 0.5 },
+  { text: "음", note: 0.5, rest: 0 }, { text: "악", note: 0.5, rest: 0 }, { text: "속", note: 0.5, rest: 0 }, { text: "의", note: 1.0, rest: 0 },
 
-  // Outro beats
-  { id: 90, lane: 0, time: 66.0 }, { id: 91, lane: 1, time: 66.5 }, { id: 92, lane: 2, time: 67.0 },
-  { id: 93, lane: 0, time: 68.0 }, { id: 94, lane: 1, time: 68.5 }, { id: 95, lane: 2, time: 69.0 },
-  { id: 96, lane: 1, time: 70.0 }, { id: 97, lane: 0, time: 71.0 }, { id: 98, lane: 2, time: 72.0 },
-  { id: 99, lane: 1, time: 73.0 }, { id: 100, lane: 0, time: 74.0 }, { id: 101, lane: 1, time: 74.5 },
-  { id: 102, lane: 2, time: 75.0 }, { id: 103, lane: 1, time: 76.0 }, { id: 104, lane: 0, time: 77.0 },
-  { id: 105, lane: 1, time: 78.0 }
+  { text: "리", note: 0.5, rest: 0 }, { text: "듬", note: 0.5, rest: 0 }, { text: "을", note: 2.0, rest: 1.0 },
+
+  // --- Scat/Chorus ---
+  { text: "스", note: 1.0, rest: 0 }, { text: "다", note: 0.5, rest: 0 }, { text: "리", note: 0.5, rest: 0 }, { text: "라", note: 0.5, rest: 0 }, { text: "리", note: 0.5, rest: 0 }, { text: "라", note: 1.0, rest: 1.0 },
+  { text: "라", note: 0.5, rest: 0 }, { text: "라", note: 0.5, rest: 0 }, { text: "라", note: 0.5, rest: 0 }, { text: "라", note: 0.5, rest: 0 }, { text: "라", note: 0.5, rest: 0 }, { text: "라", note: 1.0, rest: 1.0 },
+
+  // --- Final Part ---
+  { text: "내", note: 0.5, rest: 0 }, { text: "마", note: 0.5, rest: 0 }, { text: "음", note: 0.5, rest: 0 }, { text: "을", note: 0.5, rest: 0 },
+  { text: "담", note: 1.0, rest: 0 }, { text: "아", note: 1.0, rest: 0 },
+  { text: "노", note: 0.5, rest: 0 }, { text: "래", note: 0.5, rest: 0 }, { text: "할", note: 0.5, rest: 0 }, { text: "거", note: 0.5, rest: 0 }, { text: "야", note: 2.0, rest: 2.0 },
 ];
+
+const SONG_NOTES_CALCULATED = [];
+let calculationTime = START_TIME_SEC;
+
+sheetMusic.forEach((item, index) => {
+  SONG_NOTES_CALCULATED.push({
+    id: index + 1,
+    lane: Math.floor(Math.random() * 3), // 랜덤 레인
+    time: Number(calculationTime.toFixed(2)),
+    text: item.text
+  });
+  calculationTime += (item.note + item.rest) * BEAT_DURATION;
+});
+
+const SONG_NOTES = SONG_NOTES_CALCULATED;
 
 const FALL_SPEED = 200; // pixels per second (how fast notes fall)
 const JUDGEMENT_LINE_Y = window.innerHeight * 0.8; // Approximate hit position
@@ -179,7 +157,7 @@ function Stage2Rhythm({ onComplete }) {
       });
 
       // Update positions and check misses
-      const hitLineOffset = window.innerHeight * 0.8;
+      const hitLineOffset = (containerRef.current?.clientHeight ?? window.innerHeight) * 0.8;
       
       activeNotesRef.current = activeNotesRef.current.filter(note => {
         if (note.hit) return false;
@@ -206,8 +184,6 @@ function Stage2Rhythm({ onComplete }) {
       });
 
       // Force a re-render by updating a dummy state if needed, or just let React handle DOM directly
-      // For performance in React without complex refs, we'll just force render by calling a state
-      // Actually, updating state at 60fps is bad. We should manipulate DOM directly.
       const lanes = [
         document.getElementById('lane-0'),
         document.getElementById('lane-1'),
@@ -221,6 +197,7 @@ function Stage2Rhythm({ onComplete }) {
       activeNotesRef.current.forEach(note => {
         const noteEl = document.createElement('div');
         noteEl.className = 'rhythm-note';
+        noteEl.innerText = note.text || '';
         noteEl.style.transform = `translateY(${note.y}px)`;
         const lane = lanes[note.lane];
         if (lane) lane.appendChild(noteEl);
@@ -243,7 +220,7 @@ function Stage2Rhythm({ onComplete }) {
       }
 
       // Check end game
-      if (notesRef.current.length === 0 && activeNotesRef.current.length === 0) {
+      if (notesRef.current.length === 0 && activeNotesRef.current.length === 0 && currentTime > calculationTime) {
         setTimeout(() => {
           onComplete(); // Move to next stage
         }, 2000);
@@ -280,7 +257,7 @@ function Stage2Rhythm({ onComplete }) {
         activeNotesRef.current[targetNoteIndex].hit = true;
         flashLane(laneIndex, 'perfect');
         triggerComboBump();
-      } else if (timeDiff <= 0.10) {
+      } else if (timeDiff <= 0.12) {
         // Great
         setScore(prev => prev + 80);
         setCombo(prev => prev + 1);
@@ -292,7 +269,7 @@ function Stage2Rhythm({ onComplete }) {
         activeNotesRef.current[targetNoteIndex].hit = true;
         flashLane(laneIndex, 'great');
         triggerComboBump();
-      } else if (timeDiff <= 0.20) {
+      } else if (timeDiff <= 0.25) {
         // Good
         setScore(prev => prev + 50);
         setCombo(prev => prev + 1);
