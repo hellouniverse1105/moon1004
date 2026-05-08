@@ -3,7 +3,7 @@ import './Stage2.css';
 
 // ✅ 달빛천사 나의 마음을 담아 (BPM 115) — 악보 기반 데이터
 const BPM = 115;
-const START_TIME_SEC = 2.0; // 반주 후 시작 시간
+const START_TIME_SEC = 6.3; // 악보상 3마디 전주 (115 BPM 기준 약 6.26초) 후 시작
 const BEAT_DURATION = 60 / BPM;
 
 const sheetMusic = [
