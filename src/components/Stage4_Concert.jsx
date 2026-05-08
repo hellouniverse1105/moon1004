@@ -213,7 +213,7 @@ function Stage4Concert() {
       <div className="ending-screen fade-in-slow">
         <div className="ending-content glass-panel">
           <h1>기적의 콘서트 종료</h1>
-          <p>루나의 목소리가 온 세상에 퍼져나갔습니다.</p>
+          <p>수나의 목소리가 온 세상에 퍼져나갔습니다.</p>
           <div className="final-score">FINAL SCORE: {score}</div>
           <button className="start-btn" onClick={() => window.location.reload()}>다시 하기</button>
         </div>
@@ -229,7 +229,7 @@ function Stage4Concert() {
         <div className="mic-request-screen">
           <div className="mic-card glass-panel">
             <h2>마지막 콘서트: New Future</h2>
-            <p>직접 노래를 불러 루나의 목소리를 완성해주세요.</p>
+            <p>직접 노래를 불러 수나의 목소리를 완성해주세요.</p>
             <button className="start-btn" onClick={startConcert}>공연 시작 (마이크 권한 필요)</button>
           </div>
         </div>
@@ -247,7 +247,7 @@ function Stage4Concert() {
 
           <div className="stage-visuals">
             <div className="idol-glow" style={{ transform: `scale(${1 + (playerMidi > 0 ? 0.2 : 0)})`, opacity: playerMidi > 0 ? 0.8 : 0.3 }}></div>
-            <img src="/assets/fullmoon_idol.png" alt="Luna" className="idol-img" />
+            <img src="/assets/fullmoon_idol.png" alt="Suna" className="idol-img" />
           </div>
 
           <div className="lyrics-overlay">

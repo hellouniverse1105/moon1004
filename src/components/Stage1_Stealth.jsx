@@ -46,7 +46,7 @@ function Stage1Escape({ onComplete }) {
 
       {/* Header Info */}
       <div className="escape-header glass-panel">
-        <h2>Stage 1: 타토의 보물상자</h2>
+        <h2>Stage 1: 건토의 보물상자</h2>
         <p>방 안의 단서를 찾아 상자의 봉인을 푸세요.</p>
       </div>
 
@@ -90,7 +90,7 @@ function Stage1Escape({ onComplete }) {
         <div className="unlocked-overlay fade-in-slow">
           <div className="unlocked-content">
             <h1 className="glowing-text">봉인 해제!</h1>
-            <p>타토의 힘을 되찾아 풀문으로 변신할 수 있게 되었습니다!</p>
+            <p>건토의 힘을 되찾아 풀문으로 변신할 수 있게 되었습니다!</p>
           </div>
         </div>
       )}
