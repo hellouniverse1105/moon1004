@@ -1,64 +1,221 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Stage2.css';
 
-// ✅ 달빛천사 나의 마음을 담아 (BPM 115) — 악보 기반 데이터
-const BPM = 115;
-const START_TIME_SEC = 6.3; // 악보상 3마디 전주 (115 BPM 기준 약 6.26초) 후 시작
-const BEAT_DURATION = 60 / BPM;
-
-const sheetMusic = [
-  // --- Intro Melody ---
-  { text: "외", note: 0.5, rest: 0 }, { text: "로", note: 0.5, rest: 0 }, { text: "운", note: 0.5, rest: 0.5 },
-  { text: "사", note: 0.5, rest: 0 }, { text: "람", note: 0.5, rest: 0 }, { text: "들", note: 0.5, rest: 0 }, { text: "의", note: 1.0, rest: 0 },
-
-  { text: "마", note: 0.5, rest: 0 }, { text: "음", note: 0.5, rest: 0 }, { text: "을", note: 0.5, rest: 0.5 },
-  { text: "열", note: 0.5, rest: 0 }, { text: "어", note: 0.5, rest: 0 }, { text: "줄", note: 0.5, rest: 0 }, { text: "거", note: 0.5, rest: 0 }, { text: "야", note: 1.0, rest: 1.0 },
-
-  { text: "메", note: 0.5, rest: 0 }, { text: "마", note: 0.5, rest: 0 }, { text: "른", note: 0.5, rest: 0.5 },
-  { text: "가", note: 0.5, rest: 0 }, { text: "슴", note: 0.5, rest: 0 }, { text: "속", note: 0.5, rest: 0 }, { text: "을", note: 1.0, rest: 0 },
-
-  { text: "적", note: 0.5, rest: 0 }, { text: "셔", note: 0.5, rest: 0 }, { text: "줄", note: 0.5, rest: 0.5 },
-  { text: "멜", note: 0.5, rest: 0 }, { text: "로", note: 0.5, rest: 0 }, { text: "디", note: 2.0, rest: 1.0 },
-
-  // --- Verse 1 ---
-  { text: "슬", note: 0.5, rest: 0 }, { text: "픔", note: 0.5, rest: 0 }, { text: "의", note: 0.5, rest: 0.5 },
-  { text: "기", note: 0.5, rest: 0 }, { text: "억", note: 0.5, rest: 0 }, { text: "들", note: 0.5, rest: 0 }, { text: "에", note: 1.0, rest: 0 },
-
-  { text: "기", note: 0.5, rest: 0 }, { text: "쁨", note: 0.5, rest: 0 }, { text: "을", note: 0.5, rest: 0.5 },
-  { text: "채", note: 0.5, rest: 0 }, { text: "워", note: 0.5, rest: 0 }, { text: "줄", note: 0.5, rest: 0 }, { text: "거", note: 0.5, rest: 0 }, { text: "야", note: 1.0, rest: 1.0 },
-
-  { text: "넘", note: 0.5, rest: 0 }, { text: "치", note: 0.5, rest: 0 }, { text: "는", note: 0.5, rest: 0.5 },
-  { text: "음", note: 0.5, rest: 0 }, { text: "악", note: 0.5, rest: 0 }, { text: "속", note: 0.5, rest: 0 }, { text: "의", note: 1.0, rest: 0 },
-
-  { text: "리", note: 0.5, rest: 0 }, { text: "듬", note: 0.5, rest: 0 }, { text: "을", note: 2.0, rest: 1.0 },
-
-  // --- Scat/Chorus ---
-  { text: "스", note: 1.0, rest: 0 }, { text: "다", note: 0.5, rest: 0 }, { text: "리", note: 0.5, rest: 0 }, { text: "라", note: 0.5, rest: 0 }, { text: "리", note: 0.5, rest: 0 }, { text: "라", note: 1.0, rest: 1.0 },
-  { text: "라", note: 0.5, rest: 0 }, { text: "라", note: 0.5, rest: 0 }, { text: "라", note: 0.5, rest: 0 }, { text: "라", note: 0.5, rest: 0 }, { text: "라", note: 0.5, rest: 0 }, { text: "라", note: 1.0, rest: 1.0 },
-
-  // --- Final Part ---
-  { text: "내", note: 0.5, rest: 0 }, { text: "마", note: 0.5, rest: 0 }, { text: "음", note: 0.5, rest: 0 }, { text: "을", note: 0.5, rest: 0 },
-  { text: "담", note: 1.0, rest: 0 }, { text: "아", note: 1.0, rest: 0 },
-  { text: "노", note: 0.5, rest: 0 }, { text: "래", note: 0.5, rest: 0 }, { text: "할", note: 0.5, rest: 0 }, { text: "거", note: 0.5, rest: 0 }, { text: "야", note: 2.0, rest: 2.0 },
+// ✅ Custom Beatmap Data from my_beatmap.json
+const SONG_NOTES = [
+    { "time": 2.859, "lane": 0, "type": "short" },
+    { "time": 3.111, "lane": 1, "type": "short" },
+    { "time": 3.35, "lane": 2, "type": "short" },
+    { "time": 3.591, "lane": 3, "type": "short" },
+    { "time": 3.864, "lane": 2, "type": "short" },
+    { "time": 4.088, "lane": 3, "type": "short" },
+    { "time": 4.359, "lane": 2, "type": "short" },
+    { "time": 4.903, "lane": 0, "type": "short" },
+    { "time": 5.159, "lane": 0, "type": "short" },
+    { "time": 5.416, "lane": 0, "type": "short" },
+    { "time": 5.719, "lane": 1, "type": "short" },
+    { "time": 5.99, "lane": 0, "type": "short" },
+    { "time": 6.184, "lane": 1, "type": "short" },
+    { "time": 6.471, "lane": 0, "type": "short" },
+    { "time": 6.759, "lane": 2, "type": "short" },
+    { "time": 7.079, "lane": 0, "type": "short" },
+    { "time": 7.367, "lane": 3, "type": "short" },
+    { "time": 7.67, "lane": 2, "type": "short" },
+    { "time": 7.928, "lane": 1, "type": "short" },
+    { "time": 8.166, "lane": 3, "type": "short" },
+    { "time": 8.471, "lane": 2, "type": "short" },
+    { "time": 8.743, "lane": 0, "type": "short" },
+    { "time": 9.064, "lane": 1, "type": "short" },
+    { "time": 9.448, "lane": 2, "type": "short" },
+    { "time": 9.815, "lane": 3, "type": "short" },
+    { "time": 10.12, "lane": 2, "type": "short" },
+    { "time": 10.504, "lane": 2, "type": "short" },
+    { "time": 10.918, "lane": 2, "type": "short" },
+    { "time": 11.48, "lane": 0, "type": "short" },
+    { "time": 11.703, "lane": 0, "type": "short" },
+    { "time": 11.926, "lane": 0, "type": "short" },
+    { "time": 12.23, "lane": 2, "type": "short" },
+    { "time": 12.487, "lane": 3, "type": "short" },
+    { "time": 12.807, "lane": 2, "type": "short" },
+    { "time": 13.079, "lane": 3, "type": "short" },
+    { "time": 13.64, "lane": 1, "type": "short" },
+    { "time": 13.927, "lane": 0, "type": "short" },
+    { "time": 14.182, "lane": 1, "type": "short" },
+    { "time": 14.471, "lane": 2, "type": "short" },
+    { "time": 14.68, "lane": 3, "type": "short" },
+    { "time": 14.872, "lane": 2, "type": "short" },
+    { "time": 15.223, "lane": 0, "type": "short" },
+    { "time": 15.462, "lane": 0, "type": "short" },
+    { "time": 15.831, "lane": 2, "type": "short" },
+    { "time": 16.119, "lane": 3, "type": "short" },
+    { "time": 16.424, "lane": 2, "type": "short" },
+    { "time": 16.631, "lane": 3, "type": "short" },
+    { "time": 16.918, "lane": 2, "type": "short" },
+    { "time": 17.191, "lane": 1, "type": "short" },
+    { "time": 17.48, "lane": 0, "type": "short" },
+    { "time": 17.783, "lane": 2, "type": "short" },
+    { "time": 18.167, "lane": 3, "type": "short" },
+    { "time": 18.647, "lane": 2, "type": "long", "duration": 1.072 },
+    { "time": 19.863, "lane": 3, "type": "short" },
+    { "time": 20.696, "lane": 2, "type": "short" },
+    { "time": 21.017, "lane": 3, "type": "short" },
+    { "time": 21.462, "lane": 2, "type": "short" },
+    { "time": 21.863, "lane": 3, "type": "short" },
+    { "time": 22.871, "lane": 0, "type": "short" },
+    { "time": 23.174, "lane": 1, "type": "short" },
+    { "time": 23.496, "lane": 0, "type": "short" },
+    { "time": 23.671, "lane": 1, "type": "short" },
+    { "time": 23.976, "lane": 0, "type": "short" },
+    { "time": 24.28, "lane": 2, "type": "short" },
+    { "time": 25.048, "lane": 3, "type": "short" },
+    { "time": 25.366, "lane": 2, "type": "short" },
+    { "time": 25.719, "lane": 3, "type": "short" },
+    { "time": 26.152, "lane": 2, "type": "long", "duration": 1.265 },
+    { "time": 28.199, "lane": 0, "type": "short" },
+    { "time": 28.679, "lane": 1, "type": "short" },
+    { "time": 29.158, "lane": 3, "type": "short" },
+    { "time": 29.639, "lane": 2, "type": "short" },
+    { "time": 30.024, "lane": 3, "type": "short" },
+    { "time": 30.279, "lane": 2, "type": "short" },
+    { "time": 30.534, "lane": 3, "type": "short" },
+    { "time": 30.823, "lane": 0, "type": "short" },
+    { "time": 31.288, "lane": 0, "type": "short" },
+    { "time": 31.719, "lane": 1, "type": "short" },
+    { "time": 32.216, "lane": 2, "type": "short" },
+    { "time": 32.487, "lane": 0, "type": "short" },
+    { "time": 32.744, "lane": 2, "type": "short" },
+    { "time": 33.0, "lane": 3, "type": "short" },
+    { "time": 33.496, "lane": 2, "type": "short" },
+    { "time": 33.879, "lane": 1, "type": "short" },
+    { "time": 34.376, "lane": 2, "type": "short" },
+    { "time": 34.599, "lane": 3, "type": "short" },
+    { "time": 34.887, "lane": 2, "type": "short" },
+    { "time": 35.127, "lane": 0, "type": "short" },
+    { "time": 35.607, "lane": 1, "type": "short" },
+    { "time": 36.07, "lane": 1, "type": "short" },
+    { "time": 36.552, "lane": 2, "type": "short" },
+    { "time": 36.791, "lane": 3, "type": "short" },
+    { "time": 37.079, "lane": 2, "type": "short" },
+    { "time": 37.351, "lane": 0, "type": "short" },
+    { "time": 37.895, "lane": 1, "type": "short" },
+    { "time": 38.296, "lane": 2, "type": "short" },
+    { "time": 38.759, "lane": 3, "type": "short" },
+    { "time": 39.016, "lane": 2, "type": "short" },
+    { "time": 39.287, "lane": 3, "type": "short" },
+    { "time": 39.543, "lane": 2, "type": "short" },
+    { "time": 40.039, "lane": 0, "type": "short" },
+    { "time": 40.488, "lane": 1, "type": "short" },
+    { "time": 40.952, "lane": 2, "type": "short" },
+    { "time": 41.191, "lane": 2, "type": "short" },
+    { "time": 41.479, "lane": 2, "type": "short" },
+    { "time": 41.752, "lane": 0, "type": "short" },
+    { "time": 42.135, "lane": 1, "type": "short" },
+    { "time": 42.566, "lane": 3, "type": "short" },
+    { "time": 42.855, "lane": 2, "type": "short" },
+    { "time": 43.207, "lane": 3, "type": "short" },
+    { "time": 43.607, "lane": 2, "type": "short" },
+    { "time": 43.878, "lane": 3, "type": "long", "duration": 1.571 },
+    { "time": 46.087, "lane": 0, "type": "long", "duration": 0.639 },
+    { "time": 46.983, "lane": 1, "type": "short" },
+    { "time": 47.304, "lane": 2, "type": "short" },
+    { "time": 47.623, "lane": 3, "type": "short" },
+    { "time": 48.007, "lane": 2, "type": "short" },
+    { "time": 48.248, "lane": 0, "type": "short" },
+    { "time": 48.632, "lane": 1, "type": "short" },
+    { "time": 49.064, "lane": 2, "type": "short" },
+    { "time": 50.247, "lane": 3, "type": "short" },
+    { "time": 50.535, "lane": 2, "type": "short" },
+    { "time": 50.776, "lane": 3, "type": "short" },
+    { "time": 51.065, "lane": 2, "type": "short" },
+    { "time": 51.302, "lane": 0, "type": "short" },
+    { "time": 51.607, "lane": 1, "type": "short" },
+    { "time": 51.974, "lane": 2, "type": "short" },
+    { "time": 52.408, "lane": 0, "type": "short" },
+    { "time": 55.207, "lane": 2, "type": "short" },
+    { "time": 55.431, "lane": 0, "type": "short" },
+    { "time": 55.671, "lane": 2, "type": "short" },
+    { "time": 55.958, "lane": 3, "type": "short" },
+    { "time": 56.344, "lane": 2, "type": "short" },
+    { "time": 56.774, "lane": 1, "type": "short" },
+    { "time": 57.08, "lane": 3, "type": "short" },
+    { "time": 57.432, "lane": 2, "type": "short" },
+    { "time": 57.895, "lane": 0, "type": "long", "duration": 0.799 },
+    { "time": 59.032, "lane": 2, "type": "short" },
+    { "time": 59.303, "lane": 3, "type": "short" },
+    { "time": 59.575, "lane": 2, "type": "short" },
+    { "time": 59.991, "lane": 3, "type": "short" },
+    { "time": 60.264, "lane": 1, "type": "short" },
+    { "time": 60.439, "lane": 0, "type": "short" },
+    { "time": 60.631, "lane": 2, "type": "short" },
+    { "time": 60.983, "lane": 3, "type": "short" },
+    { "time": 61.335, "lane": 0, "type": "short" },
+    { "time": 61.559, "lane": 1, "type": "short" },
+    { "time": 61.863, "lane": 2, "type": "short" },
+    { "time": 62.119, "lane": 3, "type": "short" },
+    { "time": 62.359, "lane": 2, "type": "short" },
+    { "time": 62.758, "lane": 0, "type": "short" },
+    { "time": 63.064, "lane": 1, "type": "long", "duration": 0.575 },
+    { "time": 63.847, "lane": 2, "type": "short" },
+    { "time": 64.119, "lane": 3, "type": "short" },
+    { "time": 64.375, "lane": 2, "type": "short" },
+    { "time": 64.616, "lane": 0, "type": "short" },
+    { "time": 64.902, "lane": 1, "type": "short" },
+    { "time": 65.222, "lane": 3, "type": "short" },
+    { "time": 65.511, "lane": 2, "type": "short" },
+    { "time": 66.006, "lane": 0, "type": "short" },
+    { "time": 66.278, "lane": 0, "type": "short" },
+    { "time": 66.504, "lane": 0, "type": "short" },
+    { "time": 66.775, "lane": 2, "type": "short" },
+    { "time": 67.031, "lane": 3, "type": "short" },
+    { "time": 67.223, "lane": 2, "type": "short" },
+    { "time": 67.558, "lane": 1, "type": "short" },
+    { "time": 67.831, "lane": 0, "type": "short" },
+    { "time": 68.215, "lane": 2, "type": "short" },
+    { "time": 68.487, "lane": 3, "type": "short" },
+    { "time": 68.727, "lane": 2, "type": "short" },
+    { "time": 68.999, "lane": 1, "type": "short" },
+    { "time": 69.287, "lane": 0, "type": "short" },
+    { "time": 69.576, "lane": 2, "type": "short" },
+    { "time": 69.897, "lane": 3, "type": "short" },
+    { "time": 70.184, "lane": 2, "type": "short" },
+    { "time": 70.567, "lane": 2, "type": "short" },
+    { "time": 70.902, "lane": 2, "type": "short" },
+    { "time": 71.143, "lane": 1, "type": "short" },
+    { "time": 71.576, "lane": 1, "type": "short" },
+    { "time": 71.991, "lane": 3, "type": "short" },
+    { "time": 72.55, "lane": 2, "type": "short" },
+    { "time": 72.776, "lane": 3, "type": "short" },
+    { "time": 73.031, "lane": 2, "type": "short" },
+    { "time": 73.287, "lane": 0, "type": "short" },
+    { "time": 73.575, "lane": 1, "type": "short" },
+    { "time": 73.864, "lane": 2, "type": "short" },
+    { "time": 74.151, "lane": 0, "type": "short" },
+    { "time": 74.663, "lane": 3, "type": "short" },
+    { "time": 74.936, "lane": 2, "type": "short" },
+    { "time": 75.175, "lane": 1, "type": "short" },
+    { "time": 75.48, "lane": 3, "type": "short" },
+    { "time": 75.783, "lane": 2, "type": "short" },
+    { "time": 75.958, "lane": 3, "type": "short" },
+    { "time": 76.327, "lane": 2, "type": "short" },
+    { "time": 76.551, "lane": 0, "type": "short" },
+    { "time": 76.887, "lane": 2, "type": "short" },
+    { "time": 77.192, "lane": 3, "type": "short" },
+    { "time": 77.449, "lane": 2, "type": "short" },
+    { "time": 77.735, "lane": 1, "type": "short" },
+    { "time": 78.006, "lane": 3, "type": "short" },
+    { "time": 78.343, "lane": 2, "type": "short" },
+    { "time": 78.599, "lane": 0, "type": "short" },
+    { "time": 78.919, "lane": 1, "type": "short" },
+    { "time": 79.288, "lane": 2, "type": "short" },
+    { "time": 79.671, "lane": 3, "type": "long", "duration": 1.103 },
+    { "time": 81.11, "lane": 2, "type": "long", "duration": 1.041 },
+    { "time": 82.135, "lane": 1, "type": "long", "duration": 0.625 },
+    { "time": 82.936, "lane": 0, "type": "long", "duration": 0.688 },
+    { "time": 82.952, "lane": 2, "type": "long", "duration": 0.751 }
 ];
 
-const SONG_NOTES_CALCULATED = [];
-let calculationTime = START_TIME_SEC;
-
-sheetMusic.forEach((item, index) => {
-  SONG_NOTES_CALCULATED.push({
-    id: index + 1,
-    lane: Math.floor(Math.random() * 3), // 랜덤 레인
-    time: Number(calculationTime.toFixed(2)),
-    text: item.text
-  });
-  calculationTime += (item.note + item.rest) * BEAT_DURATION;
-});
-
-const SONG_NOTES = SONG_NOTES_CALCULATED;
-
-const FALL_SPEED = 200; // pixels per second (how fast notes fall)
-const JUDGEMENT_LINE_Y = window.innerHeight * 0.8; // Approximate hit position
+const FALL_SPEED = 400; // Updated speed for more dynamic gameplay
+const KEYS = ['d', 'f', 'j', 'k'];
 
 function Stage2Rhythm({ onComplete }) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -67,12 +224,13 @@ function Stage2Rhythm({ onComplete }) {
   const [judgement, setJudgement] = useState('');
   const [hp, setHp] = useState(100);
   const [comboBump, setComboBump] = useState(false);
+  const [activeKeys, setActiveKeys] = useState({});
   
   const hpRef = useRef(100);
   const audioCtxRef = useRef(null);
   const startTimeRef = useRef(0);
   const reqIdRef = useRef(null);
-  const notesRef = useRef(JSON.parse(JSON.stringify(SONG_NOTES))); // Copy
+  const notesRef = useRef(SONG_NOTES.map((n, i) => ({ ...n, id: i })));
   const activeNotesRef = useRef([]);
   const bgmRef = useRef(null);
   const canvasRef = useRef(null);
@@ -81,7 +239,7 @@ function Stage2Rhythm({ onComplete }) {
   const containerRef = useRef(null);
   const judgementTimeoutRef = useRef(null);
 
-  // Play a simple beep
+  // Play hit sounds
   const playHitSound = (type = 'perfect') => {
     if (!audioCtxRef.current) return;
     const osc = audioCtxRef.current.createOscillator();
@@ -90,9 +248,9 @@ function Stage2Rhythm({ onComplete }) {
     osc.type = 'sine';
     if (type === 'perfect') osc.frequency.setValueAtTime(880, audioCtxRef.current.currentTime);
     else if (type === 'good') osc.frequency.setValueAtTime(660, audioCtxRef.current.currentTime);
-    else osc.frequency.setValueAtTime(220, audioCtxRef.current.currentTime); // miss
+    else osc.frequency.setValueAtTime(220, audioCtxRef.current.currentTime);
     
-    gain.gain.setValueAtTime(0.1, audioCtxRef.current.currentTime);
+    gain.gain.setValueAtTime(0.05, audioCtxRef.current.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, audioCtxRef.current.currentTime + 0.1);
     
     osc.connect(gain);
@@ -111,10 +269,9 @@ function Stage2Rhythm({ onComplete }) {
   const emitParticles = (laneIndex, type) => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
-    // Assuming 3 lanes, 80% width starting at 10%
-    const laneWidth = (canvas.width * 0.8) / 3;
-    const x = (canvas.width * 0.1) + (laneIndex * laneWidth) + (laneWidth / 2);
-    const y = canvas.height * 0.8; // Judgement line
+    const laneWidth = canvas.width / 4;
+    const x = (laneIndex * laneWidth) + (laneWidth / 2);
+    const y = canvas.height; // At the bottom (hit line)
 
     let color = '255, 255, 255';
     if (type === 'perfect') color = '0, 255, 255';
@@ -124,9 +281,9 @@ function Stage2Rhythm({ onComplete }) {
     for (let i = 0; i < 20; i++) {
       particlesRef.current.push({
         x, y,
-        vx: (Math.random() - 0.5) * 10,
-        vy: (Math.random() - 0.5) * 10,
-        size: Math.random() * 5 + 2,
+        vx: (Math.random() - 0.5) * 15,
+        vy: (Math.random() - 0.5) * 15 - 5,
+        size: Math.random() * 4 + 2,
         life: 1,
         color
       });
@@ -143,88 +300,70 @@ function Stage2Rhythm({ onComplete }) {
     startTimeRef.current = audioCtxRef.current.currentTime;
     
     const updateLoop = () => {
-      if (hpRef.current <= 0) return; // Stop loop if dead
+      if (hpRef.current <= 0) return;
       const currentTime = bgmRef.current ? bgmRef.current.currentTime : (audioCtxRef.current.currentTime - startTimeRef.current);
       
-      // Spawn new notes (spawn them 2 seconds before they hit)
+      // Spawn notes
       const lookAhead = 2.0;
       notesRef.current = notesRef.current.filter(note => {
         if (note.time - currentTime <= lookAhead) {
-          activeNotesRef.current.push({ ...note, y: 0, hit: false });
-          return false; // remove from pending
-        }
-        return true;
-      });
-
-      // Update positions and check misses
-      const hitLineOffset = (containerRef.current?.clientHeight ?? window.innerHeight) * 0.8;
-      
-      activeNotesRef.current = activeNotesRef.current.filter(note => {
-        if (note.hit) return false;
-        
-        // Calculate Y based on time difference
-        const timeToHit = note.time - currentTime;
-        const currentY = hitLineOffset - (timeToHit * FALL_SPEED);
-        note.y = currentY;
-
-        // If it falls way past the line, it's a miss
-        if (timeToHit < -0.3) {
-          setCombo(0);
-          hpRef.current = Math.max(0, hpRef.current - 5);
-          setHp(hpRef.current);
-          showJudgement('MISS');
-          playHitSound('miss');
-          if (hpRef.current <= 0) {
-            if (bgmRef.current) bgmRef.current.pause();
-            setTimeout(() => onComplete(), 2000);
-          }
+          activeNotesRef.current.push({ 
+            ...note, 
+            y: 0, 
+            hit: false, 
+            isHolding: false, 
+            headHit: false,
+            tailMissed: false
+          });
           return false;
         }
         return true;
       });
 
-      // Force a re-render by updating a dummy state if needed, or just let React handle DOM directly
-      const lanes = [
-        document.getElementById('lane-0'),
-        document.getElementById('lane-1'),
-        document.getElementById('lane-2')
-      ];
+      // Update positions
+      const boardHeight = containerRef.current?.clientHeight * 0.8 || window.innerHeight * 0.8;
+      
+      activeNotesRef.current = activeNotesRef.current.filter(note => {
+        if (note.hit) return false;
+        
+        const timeToHit = note.time - currentTime;
+        note.y = boardHeight - (timeToHit * FALL_SPEED);
 
-      // Clear lanes
-      lanes.forEach(lane => { if (lane) lane.innerHTML = ''; });
+        // Long note holding points
+        if (note.type === 'long' && note.isHolding) {
+          setScore(s => s + 1);
+        }
 
-      // Draw active notes
-      activeNotesRef.current.forEach(note => {
-        const noteEl = document.createElement('div');
-        noteEl.className = 'rhythm-note';
-        noteEl.innerText = note.text || '';
-        noteEl.style.transform = `translateY(${note.y}px)`;
-        const lane = lanes[note.lane];
-        if (lane) lane.appendChild(noteEl);
+        // Miss detection
+        if (note.type === 'short') {
+          if (timeToHit < -0.2) {
+            handleMiss();
+            return false;
+          }
+        } else { // Long note
+          const tailTimeToHit = (note.time + note.duration) - currentTime;
+          if (tailTimeToHit < -0.2) {
+            if (note.isHolding) { // Successfully finished
+              setScore(s => s + 200);
+              setCombo(c => c + 1);
+              showJudgement('PERFECT');
+              emitParticles(note.lane, 'perfect');
+            } else if (!note.tailMissed) {
+              handleMiss();
+            }
+            return false;
+          }
+        }
+        return true;
       });
 
-      // Draw particles
-      if (canvasRef.current) {
-        const ctx = canvasRef.current.getContext('2d');
-        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-        particlesRef.current = particlesRef.current.filter(p => {
-          p.x += p.vx;
-          p.y += p.vy;
-          p.life -= 0.05;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${p.color}, ${Math.max(0, p.life)})`;
-          ctx.fill();
-          return p.life > 0;
-        });
-      }
+      renderLanes();
+      renderParticles();
 
-      // Check end game
-      if (notesRef.current.length === 0 && activeNotesRef.current.length === 0 && currentTime > calculationTime) {
-        setTimeout(() => {
-          onComplete(); // Move to next stage
-        }, 2000);
-        return; // Stop loop
+      // Check end
+      if (notesRef.current.length === 0 && activeNotesRef.current.length === 0) {
+        setTimeout(() => onComplete(), 2000);
+        return;
       }
 
       reqIdRef.current = requestAnimationFrame(updateLoop);
@@ -233,73 +372,113 @@ function Stage2Rhythm({ onComplete }) {
     reqIdRef.current = requestAnimationFrame(updateLoop);
   };
 
-  const handleTap = (laneIndex) => {
+  const handleMiss = () => {
+    setCombo(0);
+    hpRef.current = Math.max(0, hpRef.current - 8);
+    setHp(hpRef.current);
+    showJudgement('MISS');
+    playHitSound('miss');
+    if (hpRef.current <= 0) {
+      if (bgmRef.current) bgmRef.current.pause();
+      setTimeout(() => onComplete(), 2000);
+    }
+  };
+
+  const renderLanes = () => {
+    for (let i = 0; i < 4; i++) {
+      const laneEl = document.getElementById(`lane-${i}`);
+      if (!laneEl) continue;
+      laneEl.innerHTML = '';
+      
+      activeNotesRef.current.filter(n => n.lane === i).forEach(note => {
+        if (note.type === 'short') {
+          const noteEl = document.createElement('div');
+          noteEl.className = 'rhythm-note';
+          noteEl.style.top = `${note.y - 10}px`;
+          laneEl.appendChild(noteEl);
+        } else {
+          // Long note body
+          const bodyHeight = note.duration * FALL_SPEED;
+          const bodyEl = document.createElement('div');
+          bodyEl.className = `rhythm-note-body ${note.isHolding ? 'holding' : ''}`;
+          bodyEl.style.height = `${bodyHeight}px`;
+          bodyEl.style.top = `${note.y - bodyHeight}px`;
+          laneEl.appendChild(bodyEl);
+
+          // Long note head
+          const headEl = document.createElement('div');
+          headEl.className = 'rhythm-note long-head';
+          headEl.style.top = `${note.y - 10}px`;
+          laneEl.appendChild(headEl);
+        }
+      });
+    }
+  };
+
+  const renderParticles = () => {
+    if (!canvasRef.current) return;
+    const ctx = canvasRef.current.getContext('2d');
+    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    particlesRef.current = particlesRef.current.filter(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life -= 0.03;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${p.color}, ${Math.max(0, p.life)})`;
+      ctx.fill();
+      return p.life > 0;
+    });
+  };
+
+  const handlePress = (laneIndex) => {
     if (!isPlaying || hpRef.current <= 0) return;
+    setActiveKeys(prev => ({ ...prev, [laneIndex]: true }));
     
     const currentTime = bgmRef.current ? bgmRef.current.currentTime : (audioCtxRef.current.currentTime - startTimeRef.current);
+    const targetNote = activeNotesRef.current.find(n => n.lane === laneIndex && !n.hit && !n.headHit);
     
-    // Find earliest note in this lane
-    const targetNoteIndex = activeNotesRef.current.findIndex(n => n.lane === laneIndex && !n.hit);
-    
-    if (targetNoteIndex !== -1) {
-      const targetNote = activeNotesRef.current[targetNoteIndex];
+    if (targetNote) {
       const timeDiff = Math.abs(targetNote.time - currentTime);
-      
-      if (timeDiff <= 0.05) {
-        // Perfect
-        setScore(prev => prev + 100);
-        setCombo(prev => prev + 1);
-        hpRef.current = Math.min(100, hpRef.current + 2);
-        setHp(hpRef.current);
-        showJudgement('PERFECT');
-        playHitSound('perfect');
-        emitParticles(laneIndex, 'perfect');
-        activeNotesRef.current[targetNoteIndex].hit = true;
-        flashLane(laneIndex, 'perfect');
-        triggerComboBump();
-      } else if (timeDiff <= 0.12) {
-        // Great
-        setScore(prev => prev + 80);
-        setCombo(prev => prev + 1);
-        hpRef.current = Math.min(100, hpRef.current + 1);
-        setHp(hpRef.current);
-        showJudgement('GREAT');
-        playHitSound('perfect');
-        emitParticles(laneIndex, 'great');
-        activeNotesRef.current[targetNoteIndex].hit = true;
-        flashLane(laneIndex, 'great');
-        triggerComboBump();
-      } else if (timeDiff <= 0.25) {
-        // Good
-        setScore(prev => prev + 50);
-        setCombo(prev => prev + 1);
-        showJudgement('GOOD');
-        playHitSound('good');
-        emitParticles(laneIndex, 'good');
-        activeNotesRef.current[targetNoteIndex].hit = true;
-        flashLane(laneIndex, 'good');
-        triggerComboBump();
-      } else {
-        // Too early or miss
-        setCombo(0);
-        hpRef.current = Math.max(0, hpRef.current - 5);
-        setHp(hpRef.current);
-        showJudgement('MISS');
-        playHitSound('miss');
-        flashLane(laneIndex, 'miss');
-        if (hpRef.current <= 0) {
-          if (bgmRef.current) bgmRef.current.pause();
-          setTimeout(() => onComplete(), 2000);
+      if (timeDiff <= 0.2) {
+        let judgementType = 'perfect';
+        if (timeDiff <= 0.05) judgementType = 'perfect';
+        else if (timeDiff <= 0.12) judgementType = 'great';
+        else judgementType = 'good';
+
+        if (targetNote.type === 'short') {
+          targetNote.hit = true;
+          setScore(s => s + (judgementType === 'perfect' ? 100 : judgementType === 'great' ? 80 : 50));
+          setCombo(c => c + 1);
+          showJudgement(judgementType.toUpperCase());
+          playHitSound(judgementType);
+          emitParticles(laneIndex, judgementType);
+          triggerComboBump();
+          flashPad(laneIndex, judgementType);
+        } else {
+          targetNote.headHit = true;
+          targetNote.isHolding = true;
+          showJudgement(judgementType.toUpperCase());
+          playHitSound(judgementType);
+          flashPad(laneIndex, judgementType);
         }
+      } else {
+        handleMiss();
+        flashPad(laneIndex, 'miss');
       }
     } else {
-      // Tap empty lane
-      setCombo(0);
-      hpRef.current = Math.max(0, hpRef.current - 1); // slight penalty
-      setHp(hpRef.current);
-      showJudgement('MISS');
-      playHitSound('miss');
-      flashLane(laneIndex, 'miss');
+      handleMiss();
+      flashPad(laneIndex, 'miss');
+    }
+  };
+
+  const handleRelease = (laneIndex) => {
+    setActiveKeys(prev => ({ ...prev, [laneIndex]: false }));
+    const holdingNote = activeNotesRef.current.find(n => n.lane === laneIndex && n.type === 'long' && n.isHolding);
+    if (holdingNote) {
+      holdingNote.isHolding = false;
+      holdingNote.tailMissed = true;
+      handleMiss();
     }
   };
 
@@ -308,71 +487,73 @@ function Stage2Rhythm({ onComplete }) {
     setTimeout(() => setComboBump(false), 100);
   };
 
-  const flashLane = (laneIndex, type) => {
+  const flashPad = (laneIndex, type) => {
     const pad = document.getElementById(`pad-${laneIndex}`);
     if (pad) {
-      pad.className = `hit-pad active ${type}`;
-      setTimeout(() => {
-        if (pad) pad.className = 'hit-pad';
-      }, 150);
+      pad.classList.add('active', type);
+      setTimeout(() => pad.classList.remove('active', 'perfect', 'great', 'good', 'miss'), 150);
     }
   };
 
   useEffect(() => {
-    if (bgmRef.current) {
-      bgmRef.current.volume = 0.5;
-    }
+    const handleKeyDown = (e) => {
+      const idx = KEYS.indexOf(e.key.toLowerCase());
+      if (idx !== -1 && !activeKeys[idx]) {
+        handlePress(idx);
+      }
+    };
+    const handleKeyUp = (e) => {
+      const idx = KEYS.indexOf(e.key.toLowerCase());
+      if (idx !== -1) {
+        handleRelease(idx);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [isPlaying, activeKeys]);
 
-    // Resize canvas to match board
+  useEffect(() => {
     const handleResize = () => {
       if (canvasRef.current && containerRef.current) {
-        canvasRef.current.width = containerRef.current.clientWidth;
-        canvasRef.current.height = containerRef.current.clientHeight;
+        canvasRef.current.width = containerRef.current.clientWidth * 0.8;
+        canvasRef.current.height = containerRef.current.clientHeight * 0.8;
       }
     };
     handleResize();
     window.addEventListener('resize', handleResize);
-
     return () => {
       window.removeEventListener('resize', handleResize);
-      if (bgmRef.current) {
-        bgmRef.current.pause();
-        bgmRef.current.currentTime = 0;
-      }
       if (reqIdRef.current) cancelAnimationFrame(reqIdRef.current);
-      if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
-        audioCtxRef.current.close();
-      }
     };
   }, []);
 
   return (
     <div className="stage2-rhythm-container fade-in" ref={containerRef}>
       <audio ref={bgmRef} src="/audio/stage2.mp3" preload="auto" />
+      
+      <div className="hud">
+        <div className="score">SCORE: {score}</div>
+        <div className={`combo ${comboBump ? 'bump' : ''}`}>{combo > 0 ? `${combo} COMBO` : ''}</div>
+      </div>
+
+      <div className="hp-bar-container">
+        <div className={`hp-bar-fill ${hp <= 20 ? 'danger' : ''}`} style={{ width: `${hp}%` }}></div>
+      </div>
+
       {!isPlaying ? (
         <div className="rhythm-intro glass-panel">
-          <h2>Stage 2: 박자 연습</h2>
-          <p>곡: 나의 마음을 담아</p>
-          <p>노트가 하단 라인에 닿을 때 판정 영역을 터치하세요!</p>
-          <button className="start-btn" onClick={startGame}>연습 시작</button>
-        </div>
-      ) : hp <= 0 ? (
-        <div className="rhythm-intro glass-panel" style={{ border: '1px solid red' }}>
-          <h2 style={{ color: 'red' }}>GAME OVER</h2>
-          <p>체력이 모두 소진되었습니다...</p>
+          <h2>Stage 2: 4키 연습</h2>
+          <p>D, F, J, K 키 또는 화면 하단을 터치하세요!</p>
+          <p>롱노트는 끝까지 누르고 있어야 합니다.</p>
+          <button className="start-btn" onClick={startGame}>시작하기</button>
         </div>
       ) : (
         <>
-          <div className="hud">
-            <div className="score">SCORE: {score}</div>
-            <div className={`combo ${comboBump ? 'bump' : ''}`}>{combo > 0 ? `${combo} COMBO` : ''}</div>
-          </div>
-
-          <div className="hp-bar-container">
-            <div className={`hp-bar-fill ${hp <= 20 ? 'danger' : ''}`} style={{ width: `${hp}%` }}></div>
-          </div>
-          
-          <div className="judgement-display fade-in-fast">
+          <div className="judgement-display">
             <span className={`judgement-text ${judgement.toLowerCase()}`}>{judgement}</span>
           </div>
 
@@ -381,14 +562,24 @@ function Stage2Rhythm({ onComplete }) {
             <div className="lane" id="lane-0"></div>
             <div className="lane" id="lane-1"></div>
             <div className="lane" id="lane-2"></div>
-            
+            <div className="lane" id="lane-3"></div>
             <div className="judgement-line"></div>
           </div>
 
           <div className="hit-pads">
-            <div className="hit-pad" id="pad-0" onTouchStart={() => handleTap(0)} onMouseDown={() => handleTap(0)}></div>
-            <div className="hit-pad" id="pad-1" onTouchStart={() => handleTap(1)} onMouseDown={() => handleTap(1)}></div>
-            <div className="hit-pad" id="pad-2" onTouchStart={() => handleTap(2)} onMouseDown={() => handleTap(2)}></div>
+            {KEYS.map((key, i) => (
+              <div 
+                key={key}
+                className={`hit-pad ${activeKeys[i] ? 'active' : ''}`} 
+                id={`pad-${i}`}
+                data-key={key.toUpperCase()}
+                onMouseDown={() => handlePress(i)}
+                onMouseUp={() => handleRelease(i)}
+                onTouchStart={(e) => { e.preventDefault(); handlePress(i); }}
+                onTouchEnd={(e) => { e.preventDefault(); handleRelease(i); }}
+              >
+              </div>
+            ))}
           </div>
         </>
       )}
