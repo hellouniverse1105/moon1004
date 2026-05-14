@@ -210,8 +210,8 @@ const SONG_NOTES = [
     { "time": 79.671, "lane": 3, "type": "long", "duration": 1.103 },
     { "time": 81.11, "lane": 2, "type": "long", "duration": 1.041 },
     { "time": 82.135, "lane": 1, "type": "long", "duration": 0.625 },
-    { "time": 82.936, "lane": 0, "type": "long", "duration": 0.688 },
-    { "time": 82.952, "lane": 2, "type": "long", "duration": 0.751 }
+    { "time": 82.936, "lane": 0, "type": "long", "duration": 0.751 },
+    { "time": 82.936, "lane": 2, "type": "long", "duration": 0.751 }
 ];
 
 const FALL_SPEED = 400; // Updated speed for more dynamic gameplay
@@ -449,6 +449,10 @@ function Stage2Rhythm({ onComplete }) {
         if (targetNote.type === 'short') {
           targetNote.hit = true;
           setScore(s => s + (judgementType === 'perfect' ? 100 : judgementType === 'great' ? 80 : 50));
+          if (judgementType === 'perfect') {
+            hpRef.current = Math.min(100, hpRef.current + 2);
+            setHp(hpRef.current);
+          }
           setCombo(c => c + 1);
           showJudgement(judgementType.toUpperCase());
           playHitSound(judgementType);

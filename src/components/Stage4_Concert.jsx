@@ -6,7 +6,7 @@ const midiToFreq = (midi) => 440 * Math.pow(2, (midi - 69) / 12);
 const freqToMidi = (f) => (f > 0) ? 69 + 12 * Math.log2(f / 440) : 0;
 
 // ✅ New Future 멜로디 데이터 (MIDI 번호 기반)
-const MELODY_DATA = [
+let MELODY_DATA = [
   // 1절: "오직 한 가지 간직하고 있는 건"
   { time: 1.0, duration: 0.4, note: 67 }, { time: 1.5, duration: 0.4, note: 67 },
   { time: 2.0, duration: 0.4, note: 69 }, { time: 2.5, duration: 0.4, note: 67 },
@@ -23,6 +23,15 @@ const MELODY_DATA = [
   { time: 12.0, duration: 0.4, note: 67 }, { time: 13.0, duration: 0.4, note: 69 },
   { time: 15.0, duration: 0.4, note: 72 }, { time: 16.0, duration: 0.8, note: 71 },
 ];
+
+try {
+  const savedData = localStorage.getItem('CUSTOM_MELODY_DATA');
+  if (savedData) {
+    MELODY_DATA = JSON.parse(savedData);
+  }
+} catch (e) {
+  console.log("Error loading custom melody data");
+}
 
 const SONG_DURATION = 60;
 

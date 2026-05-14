@@ -86,11 +86,11 @@ const SONG_NOTES = [
     { "time": 62.355, "lane": 3, "type": "short" },
     { "time": 62.755, "lane": 2, "type": "short" },
     { "time": 63.123, "lane": 3, "type": "short" },
-    { "time": 63.428, "lane": 0, "type": "long", "duration": 0.833 },
-    { "time": 63.443, "lane": 3, "type": "long", "duration": 0.849 },
-    { "time": 64.613, "lane": 1, "type": "long", "duration": 1.502 },
-    { "time": 64.628, "lane": 2, "type": "long", "duration": 1.503 },
-    { "time": 66.932, "lane": 2, "type": "long", "duration": 0.255 },
+    { "time": 63.428, "lane": 0, "type": "long", "duration": 0.849 },
+    { "time": 63.428, "lane": 3, "type": "long", "duration": 0.849 },
+    { "time": 64.613, "lane": 1, "type": "long", "duration": 1.503 },
+    { "time": 64.613, "lane": 2, "type": "long", "duration": 1.503 },
+    { "time": 66.916, "lane": 2, "type": "long", "duration": 0.288 },
     { "time": 66.916, "lane": 0, "type": "long", "duration": 0.288 },
     { "time": 67.348, "lane": 3, "type": "short" },
     { "time": 67.299, "lane": 1, "type": "short" },
@@ -99,8 +99,8 @@ const SONG_NOTES = [
     { "time": 68.389, "lane": 2, "type": "short" },
     { "time": 68.885, "lane": 0, "type": "short" },
     { "time": 69.109, "lane": 1, "type": "short" },
-    { "time": 69.46, "lane": 0, "type": "long", "duration": 2.384 },
-    { "time": 69.493, "lane": 2, "type": "long", "duration": 2.399 },
+    { "time": 69.46, "lane": 0, "type": "long", "duration": 2.399 },
+    { "time": 69.46, "lane": 2, "type": "long", "duration": 2.399 },
     { "time": 72.948, "lane": 2, "type": "short" },
     { "time": 73.107, "lane": 3, "type": "short" },
     { "time": 73.364, "lane": 2, "type": "short" },
@@ -130,7 +130,7 @@ const SONG_NOTES = [
     { "time": 82.724, "lane": 1, "type": "short" },
     { "time": 82.772, "lane": 2, "type": "short" },
     { "time": 83.028, "lane": 0, "type": "long", "duration": 1.056 },
-    { "time": 83.045, "lane": 3, "type": "long", "duration": 1.056 },
+    { "time": 83.028, "lane": 3, "type": "long", "duration": 1.056 },
     { "time": 84.309, "lane": 2, "type": "short" },
     { "time": 84.645, "lane": 3, "type": "long", "duration": 0.59 },
     { "time": 85.429, "lane": 1, "type": "short" },
@@ -192,10 +192,10 @@ const SONG_NOTES = [
     { "time": 105.877, "lane": 2, "type": "short" },
     { "time": 106.804, "lane": 3, "type": "short" },
     { "time": 106.981, "lane": 2, "type": "short" },
-    { "time": 107.306, "lane": 0, "type": "long", "duration": 5.594 },
+    { "time": 107.3, "lane": 0, "type": "long", "duration": 5.616 },
     { "time": 107.3, "lane": 1, "type": "long", "duration": 5.616 },
-    { "time": 107.316, "lane": 2, "type": "long", "duration": 5.604 },
-    { "time": 107.321, "lane": 3, "type": "long", "duration": 5.603 }
+    { "time": 107.3, "lane": 2, "type": "long", "duration": 5.616 },
+    { "time": 107.3, "lane": 3, "type": "long", "duration": 5.616 }
 ];
 
 const FALL_SPEED = 400;
@@ -381,6 +381,10 @@ function Stage3LyricRhythm({ onComplete }) {
         if (targetNote.type === 'short') {
           targetNote.hit = true;
           setScore(s => s + (judgementType === 'perfect' ? 100 : judgementType === 'great' ? 80 : 50));
+          if (judgementType === 'perfect') {
+            hpRef.current = Math.min(100, hpRef.current + 2);
+            setHp(hpRef.current);
+          }
           setCombo(c => c + 1); showJudgement(judgementType.toUpperCase()); playHitSound(judgementType);
           emitParticles(laneIndex, judgementType); triggerComboBump(); flashPad(laneIndex, judgementType);
         } else {
